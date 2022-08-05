@@ -1,0 +1,6 @@
+{
+	"verbose": true,
+	"ignore": ["node_modules", ".next"],
+	"watch": ["public/*", "pages/*", "index.js", "posts/"],
+	"ext": "js json svg png jpg webp"
+}
