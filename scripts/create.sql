@@ -34,13 +34,13 @@ CREATE TABLE IF NOT EXISTS mb_artists (
 CREATE TABLE IF NOT EXISTS albums (
 	id uuid PRIMARY key default gen_random_uuid(),
     title VARCHAR(128) NOT NULL,
-    album_artist_id uuid NOT NULL,
-    FOREIGN KEY (album_artist_id) REFERENCES artists(id)
+    artist_id uuid NOT NULL,
+    FOREIGN KEY (artist_id) REFERENCES artists(id)
 );
 
 CREATE TABLE IF NOT EXISTS mb_release (
 	album_id uuid PRIMARY KEY,
-    mb_release_id uuid NOT NULL,
+    mb_artist_id uuid NOT NULL,
     FOREIGN KEY (album_id) REFERENCES albums(id)
 );
 
@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS songs (
 	id uuid PRIMARY key default gen_random_uuid(),
     title VARCHAR(256) NOT NULL,
     duration INTEGER not null check (duration >= 0),
-    album_id uuid NOT NULL,
-    FOREIGN KEY (album_id) REFERENCES albums(id)
+    artist_id uuid NOT NULL,
+    FOREIGN KEY (artist_id) REFERENCES artists(id)
 );
 
 CREATE TABLE IF NOT EXISTS mb_recording (
@@ -59,10 +59,9 @@ CREATE TABLE IF NOT EXISTS mb_recording (
 );
 
 CREATE TABLE IF NOT EXISTS scrobbles (
-	user_id uuid,
-    time_finished timestamp with time zone,
+	user_id uuid PRIMARY key default gen_random_uuid(),
+    time_finished DATE NOT NULL,
     song_id uuid NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (song_id) REFERENCES songs(id),
-    primary key (user_id, time_finished)
+    FOREIGN KEY (song_id) REFERENCES songs(id)
 );
