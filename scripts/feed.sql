@@ -36,9 +36,9 @@ do $$
 		for i in 1..5 loop
 			insert into artist(name) values((select artistas[i])) returning artist_id into ret;
 			insert into mb_artist(artist_id, mb_artist_id) values (ret, (select mb_artistas[i]));
-			insert into album(title, album_artist_id) values ((select albuns[i]), ret) returning album_id into ret;
+			insert into album(album_title, artist_id) values ((select albuns[i]), ret) returning album_id into ret;
 			insert into mb_release(album_id, mb_release_id) values (ret, (select mb_release_arr[i]));
-			insert into song(album_id, duration, title) values (ret, (select m_dur[i]), (select musicas[i])) returning song_id into ret;
+			insert into song(album_id, duration, song_title) values (ret, (select m_dur[i]), (select musicas[i])) returning song_id into ret;
 			insert into mb_recording(song_id, mb_recording_id) values (ret, (select mb_recording_arr[i]));
 			insert into scrobble(user_id, time_finished, song_id) values ((select usuarios[i]), clock_timestamp(), ret);
 		end loop;
