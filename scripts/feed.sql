@@ -11,11 +11,11 @@ do $$
    	];
     begin
         for i in 1..6 loop
-            insert into users (username, email, birthdate) 
+            insert into "user" (username, email, birthdate) 
             values ((select info[i][1]), (select info[i][2]), (select to_date(info[i][3], 'YYYY-MM-DD')))
-            returning id into uid;
-            insert into real_names (user_id, real_name) values (uid, (select info[i][4]));
-           	insert into bios (user_id, text) values (uid, (select info[i][5]));
+            returning user_id into uid;
+            insert into real_name (user_id, real_name) values (uid, (select info[i][4]));
+           	insert into bio (user_id, text) values (uid, (select info[i][5]));
         end loop;
     end;
 $$;
@@ -29,22 +29,23 @@ do $$
 	declare musicas varchar(256)[5] := array['Free Fall', 'Tamborim Mensageiro', 'Seek & Destroy', 'Maria, Maria', 'Sugar on the Rim'];
 	declare m_dur integer[5] := array[221, 224, 416, 184, 254];
 	declare mb_recording_arr uuid[5] := array['c7f9a115-de61-43a9-834d-a4c4ba9f8357', '9f2aa91c-4daf-4062-99a9-0f20ecd34285', 'f2c2fbbd-a7a9-4cc9-840a-a527cd413528', '1d55ff8b-c5e3-4a9e-8205-c081e5797d23', 'c1e56dd1-f956-4d21-b96e-1d888404ed1f'];
-	declare usuarios uuid[5] := array(select id from users limit 5);
+	declare usuarios uuid[5] := array(select user_id from "user" limit 5);
 	declare ret uuid;
-	declare b uuid;
+	declare n uuid;
 	begin
 		for i in 1..5 loop
-			insert into artists(name) values((select artistas[i])) returning id into ret;
-			insert into mb_artists(artist_id, mb_artist_id) values (ret, (select mb_artistas[i]));
-			insert into albums(title, album_artist_id) values ((select albuns[i]), ret) returning id into ret;
+			insert into artist(name) values((select artistas[i])) returning artist_id into ret;
+			insert into mb_artist(artist_id, mb_artist_id) values (ret, (select mb_artistas[i]));
+			insert into album(title, album_artist_id) values ((select albuns[i]), ret) returning album_id into ret;
 			insert into mb_release(album_id, mb_release_id) values (ret, (select mb_release_arr[i]));
-			insert into songs(album_id, duration, title) values (ret, (select m_dur[i]), (select musicas[i])) returning id into ret;
+			insert into song(album_id, duration, title) values (ret, (select m_dur[i]), (select musicas[i])) returning song_id into ret;
 			insert into mb_recording(song_id, mb_recording_id) values (ret, (select mb_recording_arr[i]));
-			insert into scrobbles(user_id, time_finished, song_id) values ((select usuarios[i]), now(), ret);
+			insert into scrobble(user_id, time_finished, song_id) values ((select usuarios[i]), clock_timestamp(), ret);
 		end loop;
 		-- criando um "outlier" pra ter um artista com mais de um scrobble
-		select id into b from users where username = 'guibatalhoti';
-		insert into scrobbles(user_id, time_finished, song_id) values (b, now(), ret);
+		-- e também para ter um usuário com duas músicais ouvidas
+		select user_id into n from "user" where username = 'nozawa';
+		insert into scrobble(user_id, time_finished, song_id) values (n, clock_timestamp(), ret);
 	end;
 $$;
 
@@ -60,14 +61,14 @@ do $$
 	];
 	declare time_en timestamp with time zone[5] := array['2022-01-01 01:01:01+03', '2022-01-02 01:01:01+03', '2022-01-03 01:01:01+03', '2022-01-04 01:01:01+03', '2022-01-05 01:01:01+03'];
 	declare time_sa timestamp with time zone[5] := array['2022-01-01 02:01:01+03', '2022-01-02 02:01:01+03', '2022-01-03 02:01:01+03', '2022-01-04 02:01:01+03', '2022-01-05 02:01:01+03'];
-	declare usuarios uuid[5] := array(select id from users limit 5); -- vai vir em qualquer ordem, mas pouco importa, isso é apenas para demonstrar a funcionalidade dos usuários irem a eventos
-	declare artistas uuid[5] := array(select id from artists order by name);
+	declare usuarios uuid[5] := array(select user_id from "user" limit 5); -- vai vir em qualquer ordem, mas pouco importa, isso é apenas para demonstrar a funcionalidade dos usuários irem a eventos
+	declare artistas uuid[5] := array(select artist_id from artist order by name);
 	declare aux uuid;
 	begin
-		select id into s from users where username = 'salies';
+		select user_id into s from "user" where username = 'salies';
 		for i in 1..5 loop
-			insert into events(name, description, url, datetime_begin, datetime_end, plus_code, created_by)
-			values (info[i][1], info[i][2], info[i][3], time_en[i], time_sa[i], info[i][4], s) returning id into aux;
+			insert into "event"(name, description, url, datetime_begin, datetime_end, plus_code, created_by)
+			values (info[i][1], info[i][2], info[i][3], time_en[i], time_sa[i], info[i][4], s) returning event_id into aux;
 			insert into lineup(artist_id, event_id) values (artistas[i], aux);
 			insert into attendance(user_id, event_id) values (usuarios[i], aux);
 		end loop;
