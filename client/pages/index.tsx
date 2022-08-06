@@ -1,11 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Header from '../components/header';
 export default function Home() {
-  return (
-    <div>
-      <Header />
-      <p>Hello Next.js</p>
-    </div>
-  );
+	return (
+		<div className='w-full'>
+			<div className='flex justify-center items-center h-screen'>
+				<h1 className='text-3xl md:text-6xl font-bold'>⚠️ Work in progress ⚠️</h1>
+			</div>
+		</div>
+	);
 }

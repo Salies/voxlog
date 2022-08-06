@@ -1,15 +1,18 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import '../styles/globals.css';
 import 'tailwindcss/tailwind.css';
-
-function MyApp({ Component, pageProps }: any) {
-  return <Component {...pageProps} />;
-}
-
-MyApp.propTypes = {
-	Component: PropTypes.elementType.isRequired,
-	pageProps: PropTypes.object.isRequired,
+import Navbar from '../components/navbar';
+type AppProps = {
+	Component: React.ComponentType;
+	pageProps: any;
 };
+function MyApp({Component, pageProps}: AppProps) {
+	return (
+		<div className='font-sans antialiased bg-white text-black dark:bg-neutral-900 dark:text-white'>
+			<Navbar />
+			<Component {...pageProps} />;
+		</div>
+	);
+}
 
 export default MyApp;
