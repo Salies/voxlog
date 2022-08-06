@@ -8,10 +8,10 @@ const ProfileHeader = () => {
 	};
 
 	const personalMusicData = {
-		hours: 150234,
+		hours: 350234,
 		artists: 695,
-		albums: 1012,
-		songs: 43306,
+		albums: 1112,
+		songs: 403506,
 	};
 
 	return (
@@ -24,7 +24,12 @@ const ProfileHeader = () => {
 	);
 };
 
-const ProfileInfo = ({picture, name, username}) => {
+type ProfileInfoProps = {
+	name: string;
+	username: string;
+	picture: string;
+};
+const ProfileInfo = ({picture, name, username}: ProfileInfoProps) => {
 	return (
 		<div className='flex justify-center'>
 			<img src={picture} alt='avatar' className='w-32 h-32 rounded-full' />
@@ -36,43 +41,40 @@ const ProfileInfo = ({picture, name, username}) => {
 	);
 };
 
-ProfileInfo.propTypes = {
-	picture: propTypes.string,
-	name: propTypes.string.isRequired,
-	username: propTypes.string.isRequired,
+type ProfileMusicStatusProps = {
+	hours: number;
+	artists: number;
+	albums: number;
+	songs: number;
 };
 
-ProfileInfo.defaultProps = {
-	picture: '/static/images/avatar.png',
-};
-
-const ProfileMusicStatus = ({hours, artists, albums, songs}) => {
+const ProfileMusicStatus = ({hours, artists, albums, songs}: ProfileMusicStatusProps) => {
+	const intToAbbrev = (num: number, fixed = 1) => {
+		const abbrev = ['', 'K', 'M', 'B', 'T'];
+		const exp = Math.floor(Math.log(num) / Math.log(1000));
+		const result = num / Math.pow(1000, exp);
+		if (exp === 0) return `${result.toFixed(0)}${abbrev[exp]}`;
+		return `${result.toFixed(fixed)}${abbrev[exp]}`;
+	};
 	return (
 		<section className='justify-center text-center mx-auto md:mx-0 mt-5 md:mt-0'>
-			<h1 className='text-xl font-bold'>{hours} hours listening</h1>
-			<div className='flex justify-between'>
-				<div className='flex flex-col'>
-					<p>{artists}</p>
-					<h6>artists</h6>
+			<h1 className='text-xl font-bold'>{intToAbbrev(hours, 0)} hours listening</h1>
+			<div className='flex justify-evenly mt-2'>
+				<div className='flex flex-col items-center'>
+					<p className='text-lg -m-2'>{intToAbbrev(artists)}</p>
+					<p className='font-light text-sm'>artists</p>
 				</div>
 				<div className='flex flex-col'>
-					<p>{albums}</p>
-					<h6>albums</h6>
+					<p className='text-lg -m-2'>{intToAbbrev(albums)}</p>
+					<p className='font-light text-sm'>albums</p>
 				</div>
 				<div className='flex flex-col'>
-					<p>{songs}</p>
-					<h6>songs</h6>
+					<p className='text-lg -m-2'>{intToAbbrev(songs)}</p>
+					<p className='font-light text-sm'>songs</p>
 				</div>
 			</div>
 		</section>
 	);
-};
-
-ProfileMusicStatus.propTypes = {
-	hours: propTypes.number,
-	artists: propTypes.number,
-	albums: propTypes.number,
-	songs: propTypes.number,
 };
 
 export default ProfileHeader;

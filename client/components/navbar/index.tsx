@@ -1,10 +1,10 @@
 import React from 'react';
-import propTypes from 'prop-types';
 import Link from 'next/link';
+
 const Navbar = () => {
 	return (
-		<header className='bg-black text-white w-screen'>
-			<div className='container mx-auto py-3 w-full'>
+		<nav className='bg-black text-white'>
+			<div className='container mx-auto py-3'>
 				<div className='md:flex justify-between items-center text-center'>
 					<Link href='/'>
 						<a className='font-black text-3xl font-mono'>voxlog</a>
@@ -15,7 +15,7 @@ const Navbar = () => {
 					<Account />
 				</div>
 			</div>
-		</header>
+		</nav>
 	);
 };
 
@@ -31,7 +31,7 @@ const NavItems = () => {
 	];
 	return (
 		<>
-			<div className='flex items-center flex-wrap justify-center'>
+			<div className='flex items-center flex-wrap justify-center mx-auto'>
 				{navItems.map(([name, href]) => (
 					<Item key={name} name={name} href={href} />
 				))}
@@ -40,17 +40,17 @@ const NavItems = () => {
 	);
 };
 
-const Item = ({name, href}) => {
+type ItemProps = {
+	name: string;
+	href: string;
+};
+
+const Item = ({name, href}: ItemProps) => {
 	return (
 		<Link href={href}>
 			<a className='px-4 font-semibold text-xl'>{name}</a>
 		</Link>
 	);
-};
-
-Item.propTypes = {
-	name: propTypes.string.isRequired,
-	href: propTypes.string.isRequired,
 };
 
 const Account = () => {

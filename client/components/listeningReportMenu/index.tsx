@@ -3,9 +3,9 @@ import Link from 'next/link';
 
 const ListeningReportMenu = () => {
 	return (
-		<section>
-			<h2 className='text-2xl font-bold text-center'>Listening Report</h2>
-			<ul className='justify-center items-center pl-10'>
+		<section className='w-full'>
+			<h2 className='text-2xl font-bold'>Listening Report</h2>
+			<ul className='justify-center items-center'>
 				<li className='items-center justify-center w-full'>
 					<Link href='/last-day'>
 						<a className='text-lg'>Last Day</a>

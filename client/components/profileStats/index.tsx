@@ -47,12 +47,20 @@ const TopAlbums = () => {
 
 	return <ListingView title='Top Albums' items={albums} />;
 };
+type ListingViewProps = {
+	title: string;
+	items: Array<Array<string>>;
+};
 
-const ListingView = (props) => {
-	const {title, items} = props;
+const ListingView = ({title, items}: ListingViewProps) => {
 	return (
 		<section className='flex flex-col justify-between w-full my-1'>
-			<h1 className='text-3xl font-bold text-center md:text-left'>{title}</h1>
+			<div className='justify-between flex items-center'>
+				<h1 className='text-3xl font-bold text-center md:text-left'>{title}</h1>
+				<a href='#' className='text-xs font-semibold text-gray-500 hover:text-gray-700'>
+					<h6 className='text-sm font-thin'>All Time ⭣</h6>
+				</a>
+			</div>
 			<div className='flex mx-auto md:mx-0'>
 				{items.map((item) => {
 					const [title, image, link] = item;
@@ -63,12 +71,12 @@ const ListingView = (props) => {
 	);
 };
 
-ListingView.propTypes = {
-	title: propTypes.string,
-	items: propTypes.array,
+type CardProps = {
+	title: string;
+	image: string;
+	link: string;
 };
-
-const Card = ({title, image, link}) => {
+const Card = ({title, image, link}: CardProps) => {
 	return (
 		<div className='flex justify-center items-center mx-0 md:mx-1'>
 			<Link href={link}>
@@ -82,12 +90,6 @@ const Card = ({title, image, link}) => {
 			</Link>
 		</div>
 	);
-};
-
-Card.propTypes = {
-	title: propTypes.string.isRequired,
-	image: propTypes.string.isRequired,
-	link: propTypes.string.isRequired,
 };
 
 const RecentTracks = () => {
@@ -145,7 +147,11 @@ const RecentTracks = () => {
 	return <RecentTracksListing title='Recent Tracks' items={tracks} />;
 };
 
-const RecentTracksListing = ({title, items}) => {
+type RecentTracksListingProps = {
+	title: string;
+	items: Array<Array<string>>;
+};
+const RecentTracksListing = ({title, items}: RecentTracksListingProps) => {
 	return (
 		<section className='flex flex-col justify-between w-full'>
 			<h1 className='text-3xl font-bold text-center md:text-left'>{title}</h1>
@@ -169,12 +175,14 @@ const RecentTracksListing = ({title, items}) => {
 	);
 };
 
-RecentTracksListing.propTypes = {
-	title: propTypes.string,
-	items: propTypes.array,
+type ScrobbleInstanceProps = {
+	cover: string;
+	title: string;
+	artist: string;
+	date: string;
+	link: string;
 };
-
-const ScrobbleInstance = ({cover, title, artist, date, link}) => {
+const ScrobbleInstance = ({cover, title, artist, date, link}: ScrobbleInstanceProps) => {
 	return (
 		<div className='flex items-center w-full mt-2 md:mt-1 hover:scale-105 transition-all duration-200 ease-in-out hover:shadow-lg p-2'>
 			<div className='flex w-full justify-between items-center'>
@@ -197,14 +205,6 @@ const ScrobbleInstance = ({cover, title, artist, date, link}) => {
 			</div>
 		</div>
 	);
-};
-
-ScrobbleInstance.propTypes = {
-	cover: propTypes.string,
-	title: propTypes.string,
-	artist: propTypes.string,
-	date: propTypes.string,
-	link: propTypes.string,
 };
 
 export default ProfileStats;
