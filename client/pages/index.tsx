@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Header from '../components/header';
+import Navbar from '../components/navbar';
 export default function Home() {
-  return (
-    <div>
-      <Header />
-      <p>Hello Next.js</p>
-    </div>
-  );
+	return (
+		<div className='w-screen'>
+			<Navbar />a<p>Hello Next.js</p>
+		</div>
+	);
 }
