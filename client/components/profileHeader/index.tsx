@@ -5,6 +5,7 @@ const ProfileHeader = () => {
 		name: 'Gustavo Becelli',
 		username: 'becelli',
 		picture: 'https://github.com/becelli.png',
+		bio: 'O importante é o que importa',
 	};
 
 	const personalMusicData = {
@@ -20,6 +21,7 @@ const ProfileHeader = () => {
 				<ProfileInfo {...personalData} />
 				<ProfileMusicStatus {...personalMusicData} />
 			</section>
+			<p className='mt-5 text-center'>bio: {personalData.bio}</p>
 		</div>
 	);
 };
@@ -28,14 +30,17 @@ type ProfileInfoProps = {
 	name: string;
 	username: string;
 	picture: string;
+	bio: string;
 };
-const ProfileInfo = ({picture, name, username}: ProfileInfoProps) => {
+const ProfileInfo = ({picture, name, username, bio}: ProfileInfoProps) => {
 	return (
-		<div className='flex justify-center'>
-			<img src={picture} alt='avatar' className='w-32 h-32 rounded-full' />
-			<div className='px-5 flex flex-col justify-center'>
-				<h1 className='text-3xl font-bold'>{name}</h1>
-				<h1 className='text-xl'>@{username}</h1>
+		<div className=''>
+			<div className='flex justify-center'>
+				<img src={picture} alt='avatar' className='w-32 h-32 rounded-full' />
+				<div className='px-5 flex flex-col justify-center'>
+					<h1 className='text-3xl font-bold'>{name}</h1>
+					<h1 className='text-xl'>@{username}</h1>
+				</div>
 			</div>
 		</div>
 	);
