@@ -1,19 +1,18 @@
-/*global module*/
-/*eslint no-undef: "error"*/
 module.exports = {
 	env: {
 		browser: true,
 		es2021: true,
 	},
 	extends: ['eslint:recommended', 'plugin:react/recommended'],
+	parser: '@typescript-eslint/parser',
 	parserOptions: {
+		ecmaVersion: 12,
+		sourceType: 'module',
 		ecmaFeatures: {
 			jsx: true,
 		},
-		ecmaVersion: 12,
-		sourceType: 'module',
 	},
-	plugins: ['react'],
+	plugins: ['react', 'import', '@next/eslint-plugin-next'],
 	rules: {
 		indent: ['error', 'tab'],
 		'linebreak-style': ['warn', 'unix'],
