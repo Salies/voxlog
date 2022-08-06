@@ -33,9 +33,9 @@ CREATE TABLE IF NOT EXISTS mb_artist (
 
 CREATE TABLE IF NOT EXISTS album (
 	album_id uuid PRIMARY key default gen_random_uuid(),
-    title VARCHAR(128) NOT NULL,
-    album_artist_id uuid NOT NULL,
-    FOREIGN KEY (album_artist_id) REFERENCES artist(artist_id)
+    album_title VARCHAR(128) NOT NULL,
+    artist_id uuid NOT NULL,
+    FOREIGN KEY (artist_id) REFERENCES artist(artist_id)
 );
 
 CREATE TABLE IF NOT EXISTS mb_release (
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS mb_release (
 
 CREATE TABLE IF NOT EXISTS song (
 	song_id uuid PRIMARY key default gen_random_uuid(),
-    title VARCHAR(256) NOT NULL,
+    song_title VARCHAR(256) NOT NULL,
     duration INTEGER not null check (duration >= 0),
     album_id uuid NOT NULL,
     FOREIGN KEY (album_id) REFERENCES album(album_id)
