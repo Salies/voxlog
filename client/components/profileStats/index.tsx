@@ -57,7 +57,9 @@ const ListingView = ({title, items}: ListingViewProps) => {
 		<section className='flex flex-col justify-between w-full my-1'>
 			<div className='justify-between flex items-center'>
 				<h1 className='text-3xl font-bold text-center md:text-left'>{title}</h1>
-				<a href='#' className='text-xs font-semibold text-gray-500 hover:text-gray-700'>
+				<a
+					href='#'
+					className='text-xs font-semibold text-neutral-500 hover:text-black dark:text-neutral-400 hover:dark:text-white'>
 					<h6 className='text-sm font-thin'>All Time ⭣</h6>
 				</a>
 			</div>
@@ -152,6 +154,7 @@ type RecentTracksListingProps = {
 	items: Array<Array<string>>;
 };
 const RecentTracksListing = ({title, items}: RecentTracksListingProps) => {
+	let counter = 0;
 	return (
 		<section className='flex flex-col justify-between w-full'>
 			<h1 className='text-3xl font-bold text-center md:text-left'>{title}</h1>
@@ -161,7 +164,7 @@ const RecentTracksListing = ({title, items}: RecentTracksListingProps) => {
 
 					return (
 						<ScrobbleInstance
-							key={date}
+							key={counter++}
 							cover={cover}
 							title={title}
 							artist={artist}
@@ -184,7 +187,7 @@ type ScrobbleInstanceProps = {
 };
 const ScrobbleInstance = ({cover, title, artist, date, link}: ScrobbleInstanceProps) => {
 	return (
-		<div className='flex items-center w-full mt-2 md:mt-1 hover:scale-105 transition-all duration-200 ease-in-out hover:shadow-lg p-2'>
+		<div className='flex items-center w-full mt-2 md:mt-1 hover:scale-105 transition-all duration-200 ease-in-out hover:shadow-md p-2 hover:shadow-neutral-200 hover:dark:shadow-black'>
 			<div className='flex w-full justify-between items-center'>
 				<img
 					src={cover}

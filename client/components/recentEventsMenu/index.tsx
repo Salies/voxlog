@@ -7,12 +7,13 @@ const RecentEventsMenu = () => {
 		['Detonautas', 'Pres. Prudente, SP', 'may 30', 'https://ingresso.com'],
 		['Raça Negra', 'São Paulo, SP', 'aug 06', 'https://ingresso.com'],
 	];
+	let counter = 0;
 	return (
 		<section className='w-full'>
 			<h2 className='text-2xl font-bold'>Recent Events</h2>
 			<ul className='justify-center items-center'>
 				{events.map(([artist, location, date, href]) => (
-					<EventCard key={artist} artist={artist} location={location} date={date} href={href} />
+					<EventCard key={counter++} artist={artist} location={location} date={date} href={href} />
 				))}
 			</ul>
 		</section>
@@ -30,7 +31,7 @@ const EventCard = ({artist, location, date, href}: EventCardProps) => {
 	return (
 		<li className='w-full'>
 			<Link href={href}>
-				<a className='text-lg items-center justify-center w-full border-b-2 border-gray-100'>
+				<a className='text-lg items-center justify-center w-full border-b-2 border-neutral-100 dark:border-neutral-800'>
 					<h1 className='font'>{artist}</h1>
 					<span className='text-sm font-extralight'>
 						{date} - {location}

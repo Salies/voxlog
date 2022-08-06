@@ -15,7 +15,7 @@ const ProfileHeader = () => {
 	};
 
 	return (
-		<div className='px-4 py-6 bg-gray-100 w-full'>
+		<div className='px-4 py-6 bg-neutral-100 dark:bg-neutral-800 w-full'>
 			<section className='flex justify-between flex-wrap items-center w-full'>
 				<ProfileInfo {...personalData} />
 				<ProfileMusicStatus {...personalMusicData} />
