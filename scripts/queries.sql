@@ -4,7 +4,7 @@ SELECT SUM(song.duration) FROM scrobble INNER JOIN song ON (scrobble.song_id = s
 -- O artista mais ouvido da plataforma (em tempo ouvido).
 select s.artist_id, s.name, s.total_time from
 (select artist.artist_id, artist.name as name, sum(song.duration) as total_time from scrobble 
-inner join song on (scrobble.song_id = song.song_id)
+natural join song
 inner join album on (song.album_id = album.album_id)
 inner join artist on (album.album_artist_id = artist.artist_id)
 group by artist.artist_id, song.duration) as s
