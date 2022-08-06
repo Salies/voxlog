@@ -1,9 +1,9 @@
 -- inserindo usuários
 do $$
     declare uid uuid;
-   	declare info varchar[][] := array[
+   	declare info varchar[5][5] := array[
    		['salies', 'daniel.serezane@unesp.br', '2002-07-25', 'Daniel Serezane', 'oh wow!'],
-   		['becelli', 'gustavo.becelli@unesp.br', '2002-01-01', 'Gustavo Becelli', 'sei la'],
+   		['becelli', 'gustavo.becelli@unesp.br', '2002-01-01', 'Gustavo Becelli', 'o importante é o que importa.'],
    		['cadusantana', 'carlos.ef.santana@unesp.br', '2000-01-01', 'Carlos Santana', 'i am the storm that is approaching sei lá'],
    		['tomusz', 'gc.tomiasi@unesp.br', '1999-01-01', 'Gulherme Tomiasi', 'algo 3'],
    		['nozawa', 'gabriel.nozawa@unesp.br', '1999-01-01', 'Gabriel Nozawa', 'algo'],
@@ -11,11 +11,11 @@ do $$
    	];
     begin
         for i in 1..6 loop
-            insert into users (username, date_created, email, birthdate) 
-            values ((select info[i][1]), current_date, (select info[i][2]), (select to_date(info[i][3], 'YYYY-MM-DD')))
+            insert into users (username, email, birthdate) 
+            values ((select info[i][1]), (select info[i][2]), (select to_date(info[i][3], 'YYYY-MM-DD')))
             returning id into uid;
             insert into real_names (user_id, real_name) values (uid, (select info[i][4]));
-           	insert into bios (user_id, bio_text) values (uid, (select info[i][5]));
+           	insert into bios (user_id, text) values (uid, (select info[i][5]));
         end loop;
     end;
 $$;
@@ -31,6 +31,7 @@ do $$
 	declare mb_recording_arr uuid[5] := array['c7f9a115-de61-43a9-834d-a4c4ba9f8357', '9f2aa91c-4daf-4062-99a9-0f20ecd34285', 'f2c2fbbd-a7a9-4cc9-840a-a527cd413528', '1d55ff8b-c5e3-4a9e-8205-c081e5797d23', 'c1e56dd1-f956-4d21-b96e-1d888404ed1f'];
 	declare usuarios uuid[5] := array(select id from users limit 5);
 	declare ret uuid;
+	declare b uuid;
 	begin
 		for i in 1..5 loop
 			insert into artists(name) values((select artistas[i])) returning id into ret;
@@ -40,6 +41,35 @@ do $$
 			insert into songs(album_id, duration, title) values (ret, (select m_dur[i]), (select musicas[i])) returning id into ret;
 			insert into mb_recording(song_id, mb_recording_id) values (ret, (select mb_recording_arr[i]));
 			insert into scrobbles(user_id, time_finished, song_id) values ((select usuarios[i]), now(), ret);
+		end loop;
+		-- criando um "outlier" pra ter um artista com mais de um scrobble
+		select id into b from users where username = 'guibatalhoti';
+		insert into scrobbles(user_id, time_finished, song_id) values (b, now(), ret);
+	end;
+$$;
+
+-- inserindo eventos
+do $$
+	declare s uuid;
+	declare info varchar[5][4] := array[
+		['Hayley Williams Tiny Desk Concert', 'Hayley Williams Concert from home!', 'https://www.hayleywilliams.com/', '9C3XGV94+HC'],
+		['Metallica Stadium Concert', 'Metallica in a huge conert!', 'https://www.metallica.com/', '588MF8CC+XH'],
+		['Milton Nascimento Acústico', 'Milton Nascimento -- show aconchegante.', 'https://www.miltonnascimento.com.br/', '588M976H+MW'],
+		['Ok Goodnight Concert', 'Show in a small venue.', 'https://okgoodnight.com', '87JC8WW6+84'],
+		['Showzasso do Raça Negra', 'Raça Negra botando pra quebrar.', 'https://racanegra.com.br', '589CVHHP+PC']
+	];
+	declare time_en timestamp with time zone[5] := array['2022-01-01 01:01:01+03', '2022-01-02 01:01:01+03', '2022-01-03 01:01:01+03', '2022-01-04 01:01:01+03', '2022-01-05 01:01:01+03'];
+	declare time_sa timestamp with time zone[5] := array['2022-01-01 02:01:01+03', '2022-01-02 02:01:01+03', '2022-01-03 02:01:01+03', '2022-01-04 02:01:01+03', '2022-01-05 02:01:01+03'];
+	declare usuarios uuid[5] := array(select id from users limit 5); -- vai vir em qualquer ordem, mas pouco importa, isso é apenas para demonstrar a funcionalidade dos usuários irem a eventos
+	declare artistas uuid[5] := array(select id from artists order by name);
+	declare aux uuid;
+	begin
+		select id into s from users where username = 'salies';
+		for i in 1..5 loop
+			insert into events(name, description, url, datetime_begin, datetime_end, plus_code, created_by)
+			values (info[i][1], info[i][2], info[i][3], time_en[i], time_sa[i], info[i][4], s) returning id into aux;
+			insert into lineup(artist_id, event_id) values (artistas[i], aux);
+			insert into attendance(user_id, event_id) values (usuarios[i], aux);
 		end loop;
 	end;
 $$;
