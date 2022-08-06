@@ -13,36 +13,44 @@ const ProfileStats = () => {
 
 const TopArtists = () => {
 	const artists = [
+		['Metallica', 'https://i.scdn.co/image/ab6761610000e5eb8101d13bdd630b0889acd2fd', '/artists/metallica'],
 		[
-			'Metallica - Master of Puppets',
-			'https://i.scdn.co/image/ab67616d0000b273668e3aca3167e6e569a9aa20',
-			'/artists/metallica',
-		],
-		[
-			'Hayley Williams - Petals for Armor',
-			'https://i.scdn.co/image/ab67616d0000b273896e2483613a566bcb00d324',
+			'Hayley Williams',
+			'https://i.scdn.co/image/ab6761610000e5ebca3aa12c1b46ff911ad53104',
 			'/artists/hayley-williams',
 		],
 		[
-			'Milton Nascimento - Clube da Esquina',
-			'https://i.scdn.co/image/ab67616d0000b273bfbfbf3201ecd4d56ac3c155',
+			'Milton Nascimento',
+			'https://i.scdn.co/image/ab67706c0000da84bfff8bb61ae0e83a2878df1e',
 			'/artists/milton-nascimento',
 		],
-		[
-			'Novos Baianos - Acabou Chorare',
-			'https://i.scdn.co/image/ab67616d0000b27327968fcceb7e9541fb2c9d76',
-			'/artists/novos-baianos',
-		],
+		['Novos Baianos', 'https://i.scdn.co/image/ab6761610000e5eb6f2aa6bffd27b505bc2e5b8c', '/artists/novos-baianos'],
 	];
 
 	return <ListingView title='Top Artists' items={artists} />;
 };
 const TopAlbums = () => {
 	const albums = [
-		['Metallica', 'https://i.scdn.co/image/ab6761610000e5eb8101d13bdd630b0889acd2fd', '/artists/xyz'],
-		['Hayley Williams', 'https://i.scdn.co/image/ab6761610000e5ebca3aa12c1b46ff911ad53104', '/artists/xyz'],
-		['Milton Nascimento', 'https://i.scdn.co/image/ab67706c0000da84bfff8bb61ae0e83a2878df1e', '/artists/xyz'],
-		['Novos Baianos', 'https://i.scdn.co/image/ab6761610000e5eb6f2aa6bffd27b505bc2e5b8c', '/artists/xyz'],
+		[
+			'Metallica - Master of Puppets',
+			'https://i.scdn.co/image/ab67616d0000b273668e3aca3167e6e569a9aa20',
+			'/albums/xyz',
+		],
+		[
+			'Hayley Williams - Petals for Armor',
+			'https://i.scdn.co/image/ab67616d0000b273896e2483613a566bcb00d324',
+			'/albums/xyz',
+		],
+		[
+			'Milton Nascimento - Clube da Esquina',
+			'https://i.scdn.co/image/ab67616d0000b273bfbfbf3201ecd4d56ac3c155',
+			'/albums/xyz',
+		],
+		[
+			'Novos Baianos - Acabou Chorare',
+			'https://i.scdn.co/image/ab67616d0000b27327968fcceb7e9541fb2c9d76',
+			'/albums/xyz',
+		],
 	];
 
 	return <ListingView title='Top Albums' items={albums} />;
@@ -192,7 +200,7 @@ const ScrobbleInstance = ({cover, title, artist, date, link}: ScrobbleInstancePr
 				<img
 					src={cover}
 					alt={title}
-					className='w-10 rounded-full hover:scale-125 hover:rounded-xl transition-all duration-100 ease-in-out
+					className='w-10 rounded-sm hover:scale-150 transition-all duration-50 ease-in-out
 					'
 				/>
 				<Link href={link}>
