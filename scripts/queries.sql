@@ -1,20 +1,20 @@
--- calcular quantos segundos de música o usuário ouviu
--- o artista mais ouvido da plataforma
--- obter dados completos de um usuário
--- obter todos os artistas que estarão em um evento
--- obter todas as pessoas que vão num evento
-
 -- Calcular quantos segundos de música um usuário ouviu, no total.
-SELECT SUM(songs.duration) FROM scrobbles INNER JOIN songs ON (scrobbles.song_id = songs.id and scrobbles.user_id = '00a964c6-7979-4ed3-8543-880ef6ce0672') group by songs.duration;
+SELECT SUM(song.duration) FROM scrobble INNER JOIN song ON (scrobble.song_id = song.song_id and scrobble.user_id = '0d258e07-92d0-4559-8c5a-f250fc7d3924') group by song.duration;
 
 -- O artista mais ouvido da plataforma (em tempo ouvido).
-select s.id, s.name, s.total_time from
-(select artists.id, artists.name as name, sum(songs.duration) as total_time from scrobbles 
-inner join songs on (scrobbles.song_id = songs.id)
-inner join albums on (songs.album_id = albums.id)
-inner join artists on (albums.album_artist_id = artists.id)
-group by artists.id, songs.duration) as s
+select s.artist_id, s.name, s.total_time from
+(select artist.artist_id, artist.name as name, sum(song.duration) as total_time from scrobble 
+inner join song on (scrobble.song_id = song.song_id)
+inner join album on (song.album_id = album.album_id)
+inner join artist on (album.album_artist_id = artist.artist_id)
+group by artist.artist_id, song.duration) as s
 order by total_time desc limit 1;
 
 -- Obter dados completos de um usuário.
-select * from users natural join real_names natural join bios;
+select * from "user" natural join real_name natural join bio;
+
+-- Obter todos os artistas que estarão em um evento.
+select artist.artist_id, artist."name" from artist inner join lineup on (artist.artist_id = lineup.artist_id and lineup.event_id = '1c731f89-faad-4a9d-b0eb-6f1252755adf');
+
+-- Obter todas as pessoas que estarão em um evento.
+select "user".user_id, "user".username from "user" inner join attendance on ("user".user_id = attendance.user_id and attendance.event_id = '1c731f89-faad-4a9d-b0eb-6f1252755adf');
