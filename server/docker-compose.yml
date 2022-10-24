@@ -1,0 +1,17 @@
+services:
+    db:
+        image: postgres:latest
+        environment:
+            POSTGRES_PASSWORD: voxlog
+            POSTGRES_USER: voxlog
+            POSTGRES_DB: voxlog
+        ports:
+            - '5432:5432'
+        volumes:
+            - ./db:/var/lib/postgresql/data
+        restart: always
+        container_name: voxlog
+
+    # web:
+    #     build: .
+    #     command: yarn start

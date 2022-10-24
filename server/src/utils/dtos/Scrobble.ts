@@ -1,3 +1,1 @@
-export class CreateScrobbleIn {
-    
-}
+export class CreateScrobbleIn {}
