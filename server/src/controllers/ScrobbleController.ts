@@ -4,16 +4,16 @@ import ScrobbleModel from '../models/ScrobbleModel';
 const scrobbleModel = new ScrobbleModel();
 
 export default class UserController {
-	get = async (req: Request, res: Response) => {
-		try {
-			const { id } = req.params;
-			const scrobble: any | null = await scrobbleModel.get(id);
-			if (scrobble) {
-				return res.send(scrobble);
-			}
-			return res.status(404).send('Scrobble not found');
-		} catch (error) {
-			res.status(500).json({ error });
-		}
+	post = async (req: Request, res: Response) => {
+		const { track, artist, duration, username } = req.body;
+		console.log(req.body);
+		// const scrobble = await scrobbleModel.create(
+		// 	username,
+		// 	artist,
+		// 	track,
+		// 	timestamp,
+		// );
+		// res.json(scrobble);
+		res.status(200).json({ message: 'Hello World!' });
 	};
 }

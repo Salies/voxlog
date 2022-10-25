@@ -17,12 +17,10 @@ export class UserController {
 	}
 
 	async get(req: Request, res: Response): Promise<void> {
-		const { username } = req.params;
-		const user = await userModel.get(username);
-		if (user) {
-			res.status(200).json(user);
-		} else {
-			res.status(404).json({ error: 'User not found' });
+		try {
+		} catch (error) {
+			console.log(error);
+			res.status(500).json({ error: 'Internal server error' });
 		}
 	}
 }
