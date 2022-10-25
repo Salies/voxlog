@@ -1,0 +1,3 @@
+[submodule "youtube-music-voxlog"]
+	path = /clients/player
+	url = git@github.com:becelli/youtube-music-voxlog.git
