@@ -20,12 +20,25 @@ export default class UserModel {
 		return this._formatUser(user);
 	}
 
-	async get(username: string): Promise<User | null> {
-		return await prisma.user.findUnique({
+	async get(username: string): Promise<UserOut | null> {
+		const user: User = await prisma.user.findUnique({
 			where: {
 				username,
 			},
 		});
+		return this._formatUser(user);
+	}
+
+	async getPassword(username: string): Promise<string> {
+		const user = await prisma.user.findUnique({
+			where: {
+				username,
+			},
+			select: {
+				password: true,
+			},
+		});
+		return user?.password || '';
 	}
 
 	_formatUser(user: User): UserOut {
@@ -35,6 +48,7 @@ export default class UserModel {
 			birthdate: user.birthDate.toISOString(),
 			bio: user.bio,
 			realName: user.realName,
+			createdAt: user.createdAt.toISOString(),
 		};
 		return userOut;
 	}
