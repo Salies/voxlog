@@ -1,11 +1,8 @@
 {
 	"compilerOptions": {
+		"experimentalDecorators": true,
 		"target": "es6",
-		"typeRoots": [
-			"./src/@types",
-			"./node_modules/@types",
-			"./src/@types/external"
-		],
+		"typeRoots": ["./src/@types", "./node_modules/@types", "./src/@types/external"],
 		"allowJs": true,
 		"skipLibCheck": true,
 		"strict": false,
