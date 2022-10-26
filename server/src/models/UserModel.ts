@@ -63,7 +63,7 @@ export default class UserModel {
 		const defaultTopSongsRange = this.rangeToDays(user.defaultTopSongsRange);
 		const greatestRange = Math.max(defaultTopArtistsRange, defaultTopAlbumsRange, defaultTopSongsRange);
 
-		const recentScrobbleCount = await prisma.scrobble.groupBy({
+		const recentScrobbles = await prisma.scrobble.groupBy({
 			by: ['songId'],
 			where: {
 				AND: [
@@ -85,62 +85,7 @@ export default class UserModel {
 			},
 		});
 
-		const recentScrobbleCountMap = new Map();
-		recentScrobbleCount.forEach((scrobble) => {
-			recentScrobbleCountMap.set(scrobble.songId, scrobble._count.songId);
-		});
-
-		const recentScrobbles = await prisma.scrobble.findMany({
-			where: {
-				AND: [
-					{
-						createdAt: {
-							gte: new Date(Date.now() - greatestRange * 24 * 60 * 60 * 1000),
-						},
-					},
-					{ user: { username } },
-				],
-			},
-			include: {
-				song: {
-					include: {
-						album: {
-							include: {
-								artist: true,
-							},
-						},
-					},
-				},
-			},
-		});
-
-		const recentScrobblesMap = new Map();
-		recentScrobbles.forEach((scrobble) => {
-			const songId = scrobble.songId;
-			const song = scrobble.song;
-			const album = song.album;
-			const artist = album.artist;
-			const count = recentScrobbleCountMap.get(songId);
-			if (!recentScrobblesMap.has(songId)) {
-				recentScrobblesMap.set(songId, {
-					songId,
-					songName: song.title,
-					albumName: album.title,
-					artistName: artist.name,
-					artistId: artist.artistId,
-					albumId: album.albumId,
-					count,
-				});
-			}
-		});
-		return {
-			...user,
-			defaultTopArtistsRange,
-			defaultTopAlbumsRange,
-			defaultTopSongsRange,
-
-			recentScrobbles: Array.from(recentScrobblesMap.values()),
-		};
+		return recentScrobbles;
 	}
 
 	rangeToDays(range: DaysRange): number {
