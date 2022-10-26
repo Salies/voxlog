@@ -18,13 +18,18 @@
     
     bio String? @db.VarChar(160)
     realName String? @db.VarChar(64)
+    profilePictureUrl String? @db.VarChar(255)
+
+    defaultTopArtistsRange DaysRange @default(SEVEN)
+    defaultTopAlbumsRange DaysRange @default(SEVEN)
+    defaultTopSongsRange DaysRange @default(SEVEN)
 
     createdAt DateTime @default(now()) @db.Timestamp(0)
     updatedAt DateTime @updatedAt @default(now()) @db.Timestamp(0)
 
     scrobbles Scrobble[]
     eventsCreated Event[]
-    eventsAttending EventAttendee[]
+    eventsAttending EventAttendee[] 
   }
 
     model Scrobble {
@@ -118,3 +123,11 @@
         @@id([eventId, artistId])
     }
     
+    enum DaysRange {
+        SEVEN
+        THIRTY
+        NINETY
+        ONE_EIGHTY
+        THREE_SIXTY
+        ALL
+    }

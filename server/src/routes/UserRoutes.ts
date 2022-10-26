@@ -7,6 +7,6 @@ const userController = new UserController();
 const routes = Router();
 
 routes.post('/', validateBody(UserCreateIn), userController.create);
-routes.get('/:username', userController.get);
+routes.get('/:username/', userController.get);
 
 export default routes;
