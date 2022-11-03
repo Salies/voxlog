@@ -20,9 +20,9 @@
     realName String? @db.VarChar(64)
     profilePictureUrl String? @db.VarChar(255)
 
-    defaultTopArtistsRange DaysRange @default(SEVEN)
-    defaultTopAlbumsRange DaysRange @default(SEVEN)
-    defaultTopSongsRange DaysRange @default(SEVEN)
+    defaultTopArtistsRange DaysRange @default(Week)
+    defaultTopAlbumsRange DaysRange @default(Week)
+    defaultTopSongsRange DaysRange @default(Week)
 
     createdAt DateTime @default(now()) @db.Timestamp(0)
     updatedAt DateTime @updatedAt @default(now()) @db.Timestamp(0)
@@ -46,12 +46,12 @@
         songId String @id @default(cuid())
         title String @db.VarChar(100)
         duration Int @db.Integer
-        coverArtUrl String @db.VarChar(256)
+        artUrl String @db.VarChar(256)
 
         albumId String
         album Album @relation(fields: [albumId], references: [albumId])
         scrobbles Scrobble[]
-        musicBrainzRecordingId String?
+        mbRecordingId String?
 
         createdAt DateTime @default(now()) @db.Timestamp(0)
     }
@@ -59,24 +59,24 @@
     model Album {
         albumId String @id @default(cuid())
         title String @db.VarChar(100)
-        coverArtUrl String @db.VarChar(256)
+        artUrl String @db.VarChar(256)
 
         artistId String
         artist Artist @relation(fields: [artistId], references: [artistId])
         songs Song[]
-        musicBrainzReleaseId String?
+        mbReleaseId String @unique
         createdAt DateTime @default(now()) @db.Timestamp(0)
     }
     
     model Artist {
         artistId String @id @default(cuid())
         name String @db.VarChar(100)
-        coverArtUrl String @db.VarChar(256)
+        artUrl String @db.VarChar(256)
 
         albums Album[]
         events EventArtist[]
 
-        musicBrainzArtistId String?
+        mbArtistId String?
         createdAt DateTime @default(now()) @db.Timestamp(0)
     }
 
@@ -124,10 +124,10 @@
     }
     
     enum DaysRange {
-        SEVEN
-        THIRTY
-        NINETY
-        ONE_EIGHTY
-        THREE_SIXTY
-        ALL
+        Week
+        Month
+        Quarter
+        HalfYear
+        Year
+        AllTime
     }

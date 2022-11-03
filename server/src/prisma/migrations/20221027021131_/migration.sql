@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "DaysRange" AS ENUM ('Week', 'Month', 'Quarter', 'HalfYear', 'Year', 'AllTime');
+
 -- CreateTable
 CREATE TABLE "User" (
     "userId" TEXT NOT NULL,
@@ -7,6 +10,10 @@ CREATE TABLE "User" (
     "password" CHAR(60) NOT NULL,
     "bio" VARCHAR(160),
     "realName" VARCHAR(64),
+    "profilePictureUrl" VARCHAR(255),
+    "defaultTopArtistsRange" "DaysRange" DEFAULT 'Week',
+    "defaultTopAlbumsRange" "DaysRange" DEFAULT 'Week',
+    "defaultTopSongsRange" "DaysRange" DEFAULT 'Week',
     "createdAt" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

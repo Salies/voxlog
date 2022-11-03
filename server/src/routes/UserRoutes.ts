@@ -4,9 +4,13 @@ import { validateBody } from '../middlewares/validationMiddleware';
 import { UserCreateIn } from '../utils/dtos/User';
 
 const userController = new UserController();
+
 const routes = Router();
+const userRoutes = Router({ mergeParams: true });
 
 routes.post('/', validateBody(UserCreateIn), userController.create);
-routes.get('/:username/', userController.get);
+routes.use('/:username', userRoutes);
+userRoutes.get('/info', userController.getUserInfo);
+userRoutes.get('/top-songs', userController.getTopSongs);
 
 export default routes;

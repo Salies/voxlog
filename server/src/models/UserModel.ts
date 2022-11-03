@@ -1,6 +1,7 @@
 import { DaysRange, PrismaClient, User, Scrobble } from '@prisma/client';
+import { Sql } from '@prisma/client/runtime';
 import { UserCreateIn, UserOut, UserProfileOut } from '../utils/dtos/User';
-import { hashPassword } from '../utils/helpers';
+import { hashPassword, rangeToDays } from '../utils/helpers';
 
 const prisma = new PrismaClient();
 
@@ -35,41 +36,39 @@ export default class UserModel {
 				username,
 			},
 			select: {
+				username: true,
+
 				profilePictureUrl: true,
 				bio: true,
 				realName: true,
-				defaultTopArtistsRange: true,
-				defaultTopAlbumsRange: true,
-				defaultTopSongsRange: true,
 				createdAt: true,
-				eventsAttending: {
-					select: {
-						event: {
-							select: {
-								eventId: true,
-								name: true,
-								pluscode: true,
-								startTime: true,
-							},
-						},
-					},
-				},
 			},
 		});
+		return user;
+	}
 
-		if (!user) return null;
-		const defaultTopArtistsRange = this.rangeToDays(user.defaultTopArtistsRange);
-		const defaultTopAlbumsRange = this.rangeToDays(user.defaultTopAlbumsRange);
-		const defaultTopSongsRange = this.rangeToDays(user.defaultTopSongsRange);
-		const greatestRange = Math.max(defaultTopArtistsRange, defaultTopAlbumsRange, defaultTopSongsRange);
+	async getTopSongs(username: string, rangeInDays: number): Promise<any[] | null> {
+		if (!rangeInDays) {
+			const { defaultTopSongsRange: range } = await prisma.user.findUnique({
+				where: {
+					username,
+				},
+				select: {
+					defaultTopSongsRange: true,
+				},
+			});
+			if (!range) return null;
 
-		const recentScrobbles = await prisma.scrobble.groupBy({
+			rangeInDays = rangeToDays(range);
+		}
+
+		const recentTopSongScrobbles = await prisma.scrobble.groupBy({
 			by: ['songId'],
 			where: {
 				AND: [
 					{
 						createdAt: {
-							gte: new Date(Date.now() - greatestRange * 24 * 60 * 60 * 1000),
+							gte: new Date(Date.now() - rangeInDays * 24 * 60 * 60 * 1000),
 						},
 					},
 					{ user: { username } },
@@ -85,24 +84,43 @@ export default class UserModel {
 			},
 		});
 
-		return recentScrobbles;
-	}
-
-	rangeToDays(range: DaysRange): number {
-		switch (range.toString()) {
-			case 'SEVEN':
-				return 7;
-			case 'THIRTY':
-				return 30;
-			case 'NINETY':
-				return 90;
-			case 'ONE_EIGHTY':
-				return 180;
-			case 'THREE_SIXTY':
-				return 365;
-			default:
-				return 0;
-		}
+		const recentTopSongs = await prisma.song.findMany({
+			where: {
+				songId: {
+					in: recentTopSongScrobbles.map((scrobble) => scrobble.songId),
+				},
+			},
+			select: {
+				songId: true,
+				title: true,
+				duration: true,
+				coverArtUrl: true,
+				album: {
+					select: {
+						artist: {
+							select: {
+								name: true,
+							},
+						},
+						title: true,
+					},
+				},
+			},
+		});
+		return recentTopSongs;
+		// const recentTopSongsWithCount = songAndCount.map((scrobble) => {
+		// 	const song = recentTopSongs.find((song) => song.songId === scrobble.songId);
+		// 	return {
+		// 		songId: song.songId,
+		// 		title: song.title,
+		// 		duration: song.duration,
+		// 		coverArtUrl: song.coverArtUrl,
+		// 		artist: song.album.artist.name,
+		// 		album: song.album.title,
+		// 		count: scrobble.count,
+		// 	};
+		// });
+		// return recentTopSongsWithCount;
 	}
 
 	async getPassword(username: string): Promise<string> {
