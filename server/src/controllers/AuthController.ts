@@ -7,7 +7,7 @@ import { generateToken } from '../utils/auth';
 const userModel = new UserModel();
 
 export class AuthController {
-	async login(req: Request, res: Response): Promise<void> {
+	async login(req: Request, res: Response) {
 		try {
 			const userData = plainToInstance(UserLoginIn, req.body);
 
@@ -16,7 +16,7 @@ export class AuthController {
 			const isPasswordValid = await compareHash(userData.password, password);
 			if (isPasswordValid) {
 				const token = await generateToken(userData.username);
-				res.status(200).json({ token });
+				return res.status(200).json({ token });
 			}
 
 			res.status(401).json({ error: 'Invalid credentials' });
@@ -26,7 +26,7 @@ export class AuthController {
 		}
 	}
 
-	async get(req: Request, res: Response): Promise<void> {
+	async get(req: Request, res: Response) {
 		try {
 		} catch (error) {
 			console.log(error);

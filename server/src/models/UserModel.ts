@@ -1,6 +1,9 @@
-import { PrismaClient, User } from "@prisma/client";
-import { UserCreateIn, UserOut } from "../utils/dtos/User";
-import { hashPassword } from "../utils/helpers";
+
+import { DaysRange, PrismaClient, User, Scrobble } from "@prisma/client";
+import { Sql } from "@prisma/client/runtime";
+import { UserCreateIn, UserOut, UserProfileOut } from "../utils/dtos/User";
+import { hashPassword, rangeToDays } from "../utils/helpers";
+
 
 const prisma = new PrismaClient();
 
@@ -29,16 +32,94 @@ export default class UserModel {
     return this._formatUser(user);
   }
 
-  async getPassword(username: string): Promise<string> {
+  async getUserInfo(username: string): Promise<any | null> {
     const user = await prisma.user.findUnique({
       where: {
         username,
       },
       select: {
-        password: true,
+        username: true,
+        profilePictureUrl: true,
+        bio: true,
+        realName: true,
+        createdAt: true,
       },
     });
-    return user?.password || "";
+    return user;
+  }
+
+  async getTopSongs(
+    username: string,
+    rangeInDays: number
+  ): Promise<any[] | null> {
+    if (!rangeInDays) {
+      const { defaultTopSongsRange: range } = await prisma.user.findUnique({
+        where: {
+          username,
+        },
+        select: {
+          defaultTopSongsRange: true,
+        },
+      });
+      if (!range) return null;
+
+      rangeInDays = rangeToDays(range);
+    }
+
+    const recentTopSongScrobbles = await prisma.scrobble.groupBy({
+      by: ["songId"],
+      where: {
+        AND: [
+          {
+            createdAt: {
+              gte: new Date(Date.now() - rangeInDays * 24 * 60 * 60 * 1000),
+            },
+          },
+          { user: { username } },
+        ],
+      },
+      _count: {
+        songId: true,
+      },
+      orderBy: {
+        _count: {
+          songId: "desc",
+        },
+      },
+    });
+
+    const recentTopSongsInfo = await prisma.song.findMany({
+      where: {
+        songId: {
+          in: recentTopSongScrobbles.map((scrobble) => scrobble.songId),
+        },
+      },
+      select: {
+        songId: true,
+        title: true,
+        durationInSeconds: true,
+        coverArtUrl: true,
+        inAlbum: {
+          select: {
+            fromArtist: {
+              select: {
+                name: true,
+              },
+            },
+            title: true,
+          },
+        },
+      },
+    });
+    return recentTopSongsInfo.map((song) => {
+      const scrobble = recentTopSongScrobbles.find(
+        (scrobble) => scrobble.songId === song.songId
+      );
+      return {
+        ...song,
+        playCount: scrobble._count.songId,
+      };
+    });
   }
 
   _formatUser(user: User): UserOut {
