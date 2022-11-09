@@ -7,7 +7,6 @@ const prisma = new PrismaClient();
 
 export default class UserModel {
   async create(userData: UserCreateIn): Promise<UserOut> {
-    console.log(userData);
     const birthDate = new Date(userData.birthDate);
     const hashedPassword = await hashPassword(userData.password);
     const user = await prisma.user.create({

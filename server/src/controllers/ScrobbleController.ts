@@ -7,6 +7,7 @@ import UserModel from "../models/UserModel";
 import { User } from "@prisma/client";
 import { compareHash } from "../utils/helpers";
 import { generateToken, generateApiKey } from "../utils/auth";
+import Levenshtein from "fast-levenshtein";
 
 const scrobbleModel = new ScrobbleModel();
 const userModel = new UserModel();
@@ -15,15 +16,25 @@ export default class UserController {
   create = async (req: Request, res: Response) => {
     try {
       let { track, artist, album, duration } = req.body;
-      const username = req.app.locals.username;
-      console.log("track", track);
-      console.log("artist", artist);
-      console.log("album", album);
-      console.log("duration", duration);
-      // console.log('username', username);
+      const userId = req.app.locals.username || "user_cuid";
 
-      // Query MusicBrainz for the track's MBID'
-      const mbid = this.queryForRecording(track, artist, album);
+      const mbData = await this.queryForRecording(
+        track,
+        artist,
+        album,
+        duration
+      );
+
+      if (mbData) {
+        const { song, artist, album } = mbData;
+        const scrobble = await scrobbleModel.create({
+          userId,
+          song,
+          artist,
+          album,
+        });
+        res.status(201).json(scrobble);
+      }
     } catch (error) {
       // console.log(error);
       res.status(500).json({ error: "Internal server error" });
@@ -33,16 +44,78 @@ export default class UserController {
   private queryForRecording = async (
     track: string,
     artist: string,
-    album: string
+    album: string,
+    duration: number
   ) => {
-    let query = `http://musicbrainz.org/ws/2/recording?query=artist:${artist} AND recording:${track}`;
-    const albumQuery = ` AND release:${album}`;
-    query += album ? albumQuery : "";
-    query += "&limit=1&offset=0&fmt=json";
-    const result = await axios.get(query);
-    console.log("result", result);
-    const recording = result.data.recordings[0];
-    return recording.id;
+    try {
+      let query = `http://musicbrainz.org/ws/2/recording?query=artist:${artist} AND recording:${track}`;
+      const albumQuery = ` AND release:${album}`;
+      query += album ? albumQuery : "";
+      query += "&limit=1&offset=0&fmt=json";
+      const { data } = await axios.get(query);
+      const recording = data.recordings[0];
+
+      // 10% of the duration is the threshold for a match
+      // const threshold = duration * 0.1;
+      // const recordingDuration = recording.length / 1000;
+      // const durationDiff = Math.abs(recordingDuration - duration);
+      // // console.log(recordingDuration, duration, threshold, durationDiff);
+      // // if (durationDiff > threshold) throw new Error("Duration mismatch");
+
+      // // Verify if the title is a near match
+      // const recordingTitle = recording.title;
+      // const titleDiff = Levenshtein.get(recordingTitle, track, {
+      //   useCollator: true,
+      // });
+      // // if (titleDiff > 3) throw new Error("Title mismatch");
+      // // Verify if the artist is a near match
+      const artistName = recording["artist-credit"][0].artist.name;
+      // const artistDiff = Levenshtein.get(artistName, artist, {
+      //   useCollator: true,
+      // });
+      // // if (artistDiff > 3) throw new Error("Artist mismatch");
+
+      // // Verify if the album is a near match
+      const release = recording.releases[0];
+      // const releaseTitle = release.title;
+      // const releaseDiff = Levenshtein.get(releaseTitle, album, {
+      //   useCollator: true,
+      // });
+      // if (releaseDiff > 3) throw new Error("Album mismatch");
+
+      // query for the song and album CoverArt
+      let coverArtUrl: string = undefined;
+      try {
+        const releaseGroupMbid = recording.releases[0]["release-group"].id;
+        const coverArtQuery = `http://coverartarchive.org/release-group/${releaseGroupMbid}`;
+        const { data: coverArtData } = await axios.get(coverArtQuery);
+        coverArtUrl = coverArtData.images[0].thumbnails.small;
+      } catch (error) {}
+
+      const songMb = {
+        mbRecordingId: recording.id,
+        title: recording.title,
+        durationInSeconds: recording.length / 1000,
+        coverArtUrl,
+      };
+
+      const albumMb = {
+        mbReleaseId: release.id,
+        title: release.title,
+        coverArtUrl: coverArtUrl,
+      };
+
+      const artistId = recording["artist-credit"][0].artist.id;
+      const artistMb = { mbArtistId: artistId, name: artistName };
+      return {
+        song: songMb,
+        album: albumMb,
+        artist: artistMb,
+      };
+    } catch (error) {
+      console.log("Failed to query MusicBrainz for recording", error);
+      return null;
+    }
   };
 
   async login(req: Request, res: Response): Promise<void> {

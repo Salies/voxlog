@@ -59,8 +59,8 @@ model Album {
   albumId String @id @default(cuid())
   artistId String
   title String @db.VarChar(100)
-  coverArtUrl String @db.VarChar(256)
   
+  coverArtUrl String? @db.VarChar(256)
   mbReleaseId String? @unique
   
   songs Song[]
@@ -71,9 +71,10 @@ model Album {
 model Artist {
   artistId String @id @default(cuid())
   name String @db.VarChar(100)
-  artUrl String @db.VarChar(256)
 
+  artUrl String? @db.VarChar(256)
   mbArtistId String? @unique
+  
   albums Album[]
   events EventArtist[]
 
