@@ -1,9 +1,7 @@
-
 import { DaysRange, PrismaClient, User, Scrobble } from "@prisma/client";
 import { Sql } from "@prisma/client/runtime";
 import { UserCreateIn, UserOut, UserProfileOut } from "../utils/dtos/User";
 import { hashPassword, rangeToDays } from "../utils/helpers";
-
 
 const prisma = new PrismaClient();
 
@@ -30,6 +28,18 @@ export default class UserModel {
       },
     });
     return this._formatUser(user);
+  }
+
+  async getPassword(username: string): Promise<string> {
+    const password = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+      select: {
+        password: true,
+      },
+    });
+    return password.password;
   }
 
   async getUserInfo(username: string): Promise<any | null> {
