@@ -1,7 +1,9 @@
+
 import { DaysRange, PrismaClient, User, Scrobble } from "@prisma/client";
 import { Sql } from "@prisma/client/runtime";
 import { UserCreateIn, UserOut, UserProfileOut } from "../utils/dtos/User";
 import { hashPassword, rangeToDays } from "../utils/helpers";
+
 
 const prisma = new PrismaClient();
 
@@ -118,18 +120,6 @@ export default class UserModel {
         playCount: scrobble._count.songId,
       };
     });
-  }
-
-  async getPassword(username: string): Promise<string> {
-    const user = await prisma.user.findUnique({
-      where: {
-        username,
-      },
-      select: {
-        password: true,
-      },
-    });
-    return user?.password || "";
   }
 
   _formatUser(user: User): UserOut {
