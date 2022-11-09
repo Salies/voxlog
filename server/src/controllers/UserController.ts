@@ -18,7 +18,7 @@ export class UserController {
 	}
 
 	async getUserInfo(req: Request, res: Response) {
-		try {z'
+		try {
 			const { username } = req.params;
 			const user = await userModel.getUserInfo(username);
 

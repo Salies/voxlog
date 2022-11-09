@@ -11,9 +11,9 @@ CREATE TABLE "User" (
     "bio" VARCHAR(160),
     "realName" VARCHAR(64),
     "profilePictureUrl" VARCHAR(255),
-    "defaultTopArtistsRange" "DaysRange" DEFAULT 'Week',
-    "defaultTopAlbumsRange" "DaysRange" DEFAULT 'Week',
-    "defaultTopSongsRange" "DaysRange" DEFAULT 'Week',
+    "defaultTopArtistsRange" "DaysRange" NOT NULL DEFAULT 'Week',
+    "defaultTopAlbumsRange" "DaysRange" NOT NULL DEFAULT 'Week',
+    "defaultTopSongsRange" "DaysRange" NOT NULL DEFAULT 'Week',
     "createdAt" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -35,9 +35,9 @@ CREATE TABLE "Song" (
     "songId" TEXT NOT NULL,
     "title" VARCHAR(100) NOT NULL,
     "duration" INTEGER NOT NULL,
-    "coverArtUrl" VARCHAR(256) NOT NULL,
+    "artUrl" VARCHAR(256) NOT NULL,
     "albumId" TEXT NOT NULL,
-    "musicBrainzRecordingId" TEXT,
+    "mbRecordingId" TEXT,
     "createdAt" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Song_pkey" PRIMARY KEY ("songId")
@@ -47,9 +47,9 @@ CREATE TABLE "Song" (
 CREATE TABLE "Album" (
     "albumId" TEXT NOT NULL,
     "title" VARCHAR(100) NOT NULL,
-    "coverArtUrl" VARCHAR(256) NOT NULL,
+    "artUrl" VARCHAR(256) NOT NULL,
     "artistId" TEXT NOT NULL,
-    "musicBrainzReleaseId" TEXT,
+    "mbReleaseId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Album_pkey" PRIMARY KEY ("albumId")
@@ -59,8 +59,8 @@ CREATE TABLE "Album" (
 CREATE TABLE "Artist" (
     "artistId" TEXT NOT NULL,
     "name" VARCHAR(100) NOT NULL,
-    "coverArtUrl" VARCHAR(256) NOT NULL,
-    "musicBrainzArtistId" TEXT,
+    "artUrl" VARCHAR(256) NOT NULL,
+    "mbArtistId" TEXT,
     "createdAt" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Artist_pkey" PRIMARY KEY ("artistId")
@@ -106,6 +106,9 @@ CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Album_mbReleaseId_key" ON "Album"("mbReleaseId");
 
 -- AddForeignKey
 ALTER TABLE "Scrobble" ADD CONSTRAINT "Scrobble_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("userId") ON DELETE RESTRICT ON UPDATE CASCADE;

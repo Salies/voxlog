@@ -1,133 +1,134 @@
 
-  generator client {
-    provider = "prisma-client-js"
-    binaryTargets = ["native", "debian-openssl-1.1.x"]
-    previewFeatures = ["interactiveTransactions", "fullTextSearch"]
-  }
-  datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_HOST")
-  }
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+  previewFeatures = ["interactiveTransactions", "fullTextSearch"]
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
-  model User {
-    userId String @id @default(cuid())
-    username String @unique @db.VarChar(16)
-    email String  @unique @db.VarChar(100)
-    birthDate DateTime @db.Date
-    password String @db.Char(60)
-    
-    bio String? @db.VarChar(160)
-    realName String? @db.VarChar(64)
-    profilePictureUrl String? @db.VarChar(255)
+model User {
+  userId String @id @default(cuid())
+  username String @unique @db.VarChar(16)
+  email String  @unique @db.VarChar(100)
+  birthDate DateTime @db.Date
+  password String @db.Char(60)
+  
+  bio String? @db.VarChar(160)
+  realName String? @db.VarChar(64)
+  profilePictureUrl String? @db.VarChar(255)
 
-    defaultTopArtistsRange DaysRange @default(Week)
-    defaultTopAlbumsRange DaysRange @default(Week)
-    defaultTopSongsRange DaysRange @default(Week)
+  defaultTopArtistsRange DaysRange @default(Week)
+  defaultTopAlbumsRange DaysRange @default(Week)
+  defaultTopSongsRange DaysRange @default(Week)
 
-    createdAt DateTime @default(now()) @db.Timestamp(0)
-    updatedAt DateTime @updatedAt @default(now()) @db.Timestamp(0)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @default(now()) @db.Timestamp(0)
 
-    scrobbles Scrobble[]
-    eventsCreated Event[]
-    eventsAttending EventAttendee[] 
-  }
+  scrobbles Scrobble[]
+  eventsCreated Event[]
+  eventsAttending EventAttendee[] 
+}
 
-    model Scrobble {
-        scrobbleId String @id @default(cuid())
-        userId String
-        user User @relation(fields: [userId], references: [userId])
-        songId String
-        song Song @relation(fields: [songId], references: [songId])
+model Scrobble {
+  scrobbleId String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [userId])
+  songId String
+  song Song @relation(fields: [songId], references: [songId])
 
-        createdAt DateTime @default(now()) @db.Timestamp(0)
-    }
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+}
 
-    model Song {
-        songId String @id @default(cuid())
-        title String @db.VarChar(100)
-        duration Int @db.Integer
-        artUrl String @db.VarChar(256)
+model Song {
+  songId String @id @default(cuid())
+  albumId String
+  title String @db.VarChar(100)
+  durationInSeconds Int @db.Integer
 
-        albumId String
-        album Album @relation(fields: [albumId], references: [albumId])
-        scrobbles Scrobble[]
-        mbRecordingId String?
+  mbRecordingId String? @unique
+  coverArtUrl String? @db.VarChar(256)
+  
+  scrobbles Scrobble[]
+  
+  inAlbum Album @relation(fields: [albumId], references: [albumId])
+}
 
-        createdAt DateTime @default(now()) @db.Timestamp(0)
-    }
+model Album {
+  albumId String @id @default(cuid())
+  artistId String
+  title String @db.VarChar(100)
+  coverArtUrl String @db.VarChar(256)
+  
+  mbReleaseId String? @unique
+  
+  songs Song[]
+  
+  fromArtist Artist @relation(fields: [artistId], references: [artistId])
+}
 
-    model Album {
-        albumId String @id @default(cuid())
-        title String @db.VarChar(100)
-        artUrl String @db.VarChar(256)
+model Artist {
+  artistId String @id @default(cuid())
+  name String @db.VarChar(100)
+  artUrl String @db.VarChar(256)
 
-        artistId String
-        artist Artist @relation(fields: [artistId], references: [artistId])
-        songs Song[]
-        mbReleaseId String @unique
-        createdAt DateTime @default(now()) @db.Timestamp(0)
-    }
-    
-    model Artist {
-        artistId String @id @default(cuid())
-        name String @db.VarChar(100)
-        artUrl String @db.VarChar(256)
+  mbArtistId String? @unique
+  albums Album[]
+  events EventArtist[]
 
-        albums Album[]
-        events EventArtist[]
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+}
 
-        mbArtistId String?
-        createdAt DateTime @default(now()) @db.Timestamp(0)
-    }
+model Event {
+  eventId String @id @default(cuid())
+  name String @db.VarChar(100)
+  description String @db.VarChar(1000)
+  pluscode String @db.VarChar(20)
+  startTime DateTime @db.Timestamp(0)
+  endTime DateTime @db.Timestamp(0)
+  
 
-    model Event {
-        eventId String @id @default(cuid())
-        name String @db.VarChar(100)
-        description String @db.VarChar(1000)
-        pluscode String @db.VarChar(20)
-        startTime DateTime @db.Timestamp(0)
-        endTime DateTime @db.Timestamp(0)
-        
+  creatorId String
+  creator User @relation(fields: [creatorId], references: [userId])
+  
+  attendees EventAttendee[]
+  artists EventArtist[]
 
-        creatorId String
-        creator User @relation(fields: [creatorId], references: [userId])
-        
-        attendees EventAttendee[]
-        artists EventArtist[]
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @default(now()) @db.Timestamp(0)
+}
 
-        createdAt DateTime @default(now()) @db.Timestamp(0)
-        updatedAt DateTime @updatedAt @default(now()) @db.Timestamp(0)
-    }
+model EventAttendee {
+  eventId String
+  event Event @relation(fields: [eventId], references: [eventId])
+  userId String
+  user User @relation(fields: [userId], references: [userId])
 
-    model EventAttendee {
-        eventId String
-        event Event @relation(fields: [eventId], references: [eventId])
-        userId String
-        user User @relation(fields: [userId], references: [userId])
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @default(now()) @db.Timestamp(0)
 
-        createdAt DateTime @default(now()) @db.Timestamp(0)
-        updatedAt DateTime @updatedAt @default(now()) @db.Timestamp(0)
+  @@id([eventId, userId])
+}
 
-        @@id([eventId, userId])
-    }
+model EventArtist {
+  eventId String
+  event Event @relation(fields: [eventId], references: [eventId])
+  artistId String
+  artist Artist @relation(fields: [artistId], references: [artistId])
 
-    model EventArtist {
-        eventId String
-        event Event @relation(fields: [eventId], references: [eventId])
-        artistId String
-        artist Artist @relation(fields: [artistId], references: [artistId])
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @default(now()) @db.Timestamp(0)
 
-        createdAt DateTime @default(now()) @db.Timestamp(0)
-        updatedAt DateTime @updatedAt @default(now()) @db.Timestamp(0)
+  @@id([eventId, artistId])
+}
 
-        @@id([eventId, artistId])
-    }
-    
-    enum DaysRange {
-        Week
-        Month
-        Quarter
-        HalfYear
-        Year
-        AllTime
-    }
+enum DaysRange {
+  Week
+  Month
+  Quarter
+  HalfYear
+  Year
+  AllTime
+}
