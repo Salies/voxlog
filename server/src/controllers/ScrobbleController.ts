@@ -16,7 +16,7 @@ export default class UserController {
   create = async (req: Request, res: Response) => {
     try {
       let { track, artist, album, duration } = req.body;
-      const userId = req.app.locals.username || "cla8ytn610004740kcfuzrk8z";
+      const userId = req.app.locals.username || "cla9zjio50000746c89leuacf";
 
       const mbData = await this.queryForRecording(
         track,
@@ -24,7 +24,7 @@ export default class UserController {
         album,
         duration
       );
-
+      console.log;
       if (mbData) {
         const { song, artist, album } = mbData;
         const scrobble = await scrobbleModel.create({
@@ -52,36 +52,51 @@ export default class UserController {
       const albumQuery = ` AND release:${album}`;
       query += album ? albumQuery : "";
       query += "&limit=1&offset=0&fmt=json";
-      const { data } = await axios.get(query);
+      // query with 3 seconds of timeout
+      const { data } = await axios.get(query, { timeout: 3000 });
+
+      if (!data.recordings.length) throw new Error("No recording found");
+
       const recording = data.recordings[0];
 
       // 10% of the duration is the threshold for a match
-      // const threshold = duration * 0.1;
-      // const recordingDuration = recording.length / 1000;
-      // const durationDiff = Math.abs(recordingDuration - duration);
-      // // console.log(recordingDuration, duration, threshold, durationDiff);
-      // // if (durationDiff > threshold) throw new Error("Duration mismatch");
+      const threshold = duration * 0.15;
+      const recordingDuration = recording.length / 1000;
+      const durationDiff = Math.abs(recordingDuration - duration);
+      if (durationDiff > threshold) throw new Error("Duration mismatch");
 
       // // Verify if the title is a near match
-      // const recordingTitle = recording.title;
-      // const titleDiff = Levenshtein.get(recordingTitle, track, {
-      //   useCollator: true,
-      // });
-      // // if (titleDiff > 3) throw new Error("Title mismatch");
-      // // Verify if the artist is a near match
-      const artistName = recording["artist-credit"][0].artist.name;
-      // const artistDiff = Levenshtein.get(artistName, artist, {
-      //   useCollator: true,
-      // });
-      // // if (artistDiff > 3) throw new Error("Artist mismatch");
+      const recordingTitle = recording.title;
 
-      // // Verify if the album is a near match
-      const release = recording.releases[0];
-      // const releaseTitle = release.title;
-      // const releaseDiff = Levenshtein.get(releaseTitle, album, {
-      //   useCollator: true,
-      // });
-      // if (releaseDiff > 3) throw new Error("Album mismatch");
+      const titleDiff = Levenshtein.get(recordingTitle, track, {
+        useCollator: true,
+      });
+      if (titleDiff > 3) throw new Error("Title mismatch");
+
+      // Verify if the artist is a near match
+      const artistName = recording["artist-credit"][0].artist.name;
+      const artistDiff = Levenshtein.get(artistName, artist, {
+        useCollator: true,
+      });
+      if (artistDiff > 3) throw new Error("Artist mismatch");
+
+      // // Verify if some album is a near match
+
+      let release = null;
+      if (album) {
+        for (const mbRelease of recording.releases) {
+          const title = mbRelease.title;
+          const releaseDiff = Levenshtein.get(title, album, {
+            useCollator: true,
+          });
+          if (releaseDiff < 3) {
+            release = mbRelease;
+            break;
+          }
+        }
+      } else release = recording.releases[0];
+
+      if (!release) throw new Error("Album mismatch");
 
       // query for the song and album CoverArt
       let coverArtUrl: string = undefined;
@@ -94,19 +109,19 @@ export default class UserController {
 
       const songMb = {
         mbRecordingId: recording.id,
-        title: recording.title,
-        durationInSeconds: recording.length / 1000,
+        title: track,
+        durationInSeconds: duration,
         coverArtUrl,
       };
 
       const albumMb = {
         mbReleaseId: release.id,
-        title: release.title,
+        title: album,
         coverArtUrl: coverArtUrl,
       };
 
       const artistId = recording["artist-credit"][0].artist.id;
-      const artistMb = { mbArtistId: artistId, name: artistName };
+      const artistMb = { mbArtistId: artistId, name: artist };
       return {
         song: songMb,
         album: albumMb,

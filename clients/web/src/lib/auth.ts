@@ -3,7 +3,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { setCookie } from "nookies";
 import api from "./axios";
-import { UserCreateDTO } from "../utils/dtos/UserCreateDTO";
+import { UserCreateDTO } from "../utils/dtos/User";
 
 export const login = async (username: string, password: string) => {
   const response = await api.post("/login", { username, password });

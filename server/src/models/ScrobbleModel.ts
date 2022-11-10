@@ -57,14 +57,16 @@ export default class ScrobbleModel {
           where: {
             userId,
             createdAt: {
-              gte: DateTime.now().minus({ seconds: minSecs }).toJSDate(),
+              gte: DateTime.now().minus({ seconds: durationInSec }).toJSDate(),
+              // gte: DateTime.now().minus({ seconds: minSecs }).toJSDate(),/
             },
           },
         });
         if (existingScrobble) {
-          if (existingScrobble.songId !== songData.songId) {
-            if (durationInSec > 60) return null; // if the song is longer than 60 seconds, then it's probably not a skip
-          } else return null;
+          // if (existingScrobble.songId !== songData.songId) {
+          //   if (durationInSec > 60) return null; // if the song is longer than 60 seconds, then it's probably not a skip
+          // } else return null;
+          return null;
         }
 
         //Otherwise create the scrobble

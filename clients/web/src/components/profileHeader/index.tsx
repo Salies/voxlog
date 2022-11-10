@@ -1,11 +1,14 @@
+import Image from "next/image";
 import React from "react";
+import Avatar from "react-avatar";
 
-const ProfileHeader = () => {
+const ProfileHeader = ({ user }) => {
+  console.log(user);
   const personalData = {
-    name: "Gustavo Becelli",
-    username: "becelli",
-    picture: "https://github.com/becelli.png",
-    bio: "O importante é o que importa",
+    username: user.username,
+    realName: user.realName || undefined,
+    profilePictureUrl: user.profilePictureUrl,
+    bio: user.bio,
   };
 
   const personalMusicData = {
@@ -27,20 +30,37 @@ const ProfileHeader = () => {
 };
 
 type ProfileInfoProps = {
-  name: string;
+  realName: string;
   username: string;
-  picture: string;
+  profilePictureUrl: string;
   bio: string;
 };
-const ProfileInfo = ({ picture, name, username, bio }: ProfileInfoProps) => {
+const ProfileInfo = ({
+  profilePictureUrl,
+  realName,
+  username,
+}: ProfileInfoProps) => {
   return (
-    <div className="">
-      <div className="flex justify-center">
-        <img src={picture} alt="avatar" className="w-32 h-32 rounded-full" />
-        <div className="flex flex-col justify-center px-5">
-          <h1 className="text-3xl font-bold">{name}</h1>
-          <h1 className="text-xl">@{username}</h1>
-        </div>
+    <div className="flex justify-center">
+      {profilePictureUrl ? (
+        <Image
+          src={profilePictureUrl}
+          alt="avatar"
+          width={128}
+          height={128}
+          className="rounded-full"
+        />
+      ) : (
+        <Avatar
+          name={realName || username}
+          size="128"
+          round={true}
+          className="rounded-full"
+        />
+      )}
+      <div className="flex flex-col justify-center px-5">
+        <h1 className="text-3xl font-bold">{realName}</h1>
+        <h1 className="text-xl">@{username}</h1>
       </div>
     </div>
   );
