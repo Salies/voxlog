@@ -1,15 +1,13 @@
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/auth";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { login, getCurrentUser } from "../lib/auth";
 
 export default function Login() {
   const router = useRouter();
-  const { user, setUser } = useAuth();
+  const { user, signIn, loading } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user) router.push("/");
@@ -17,23 +15,22 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
-    login(username, password)
-      .then(() => {
-        // Get the logged in user (needs the next request to work)
-        const currentUser = getCurrentUser(res);
-        setUser(currentUser);
-        router.push("/");
-      })
-      .catch((err) => {
-        const errors: [] = err.response?.data?.errors || [];
-        // join all errors into one string
-        const message = errors.join("\n");
-        setError(message);
-        setLoading(false);
-        // clear password field
-      });
+    // setError("");
+    signIn(username, password);
+    // .then(() => {
+    //   // Get the logged in user (needs the next request to work)
+    //   const currentUser = getCurrentUser(res);
+    //   setUser(currentUser);
+    //   router.push("/");
+    // })
+    // .catch((err) => {
+    //   const errors: [] = err.response?.data?.errors || [];
+    //   // join all errors into one string
+    //   const message = errors.join("\n");
+    //   setError(message);
+    //   setLoading(false);
+    //   // clear password field
+    // });
   };
 
   return (
