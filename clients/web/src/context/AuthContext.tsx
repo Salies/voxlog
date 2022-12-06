@@ -8,8 +8,10 @@ import Router from "next/router";
 
 interface UserProps {
   username: string;
-  email: string;
-  name: string;
+  profilePictureUrl?: string;
+  bio?: string;
+  realName?: string;
+  createdAt: string;
 }
 
 interface AuthContextProps {
@@ -35,10 +37,10 @@ export const AuthContextProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (username: string, password: string) => {
     try {
       const response = await api.post("/login", {
-        email,
+        username,
         password,
       });
       const { token } = response.data;
@@ -47,6 +49,7 @@ export const AuthContextProvider = ({ children }) => {
       });
       setToken(token);
     } catch (error) {
+      console.log(error);
       setError(error);
     } finally {
       setLoading(false);
@@ -56,17 +59,25 @@ export const AuthContextProvider = ({ children }) => {
   const logout = async () => {
     destroyCookie(undefined, "jwt.token");
     setToken(null);
+    setUser(null);
   };
 
   useEffect(() => {
-    setLoading(true);
     if (token) {
+      api.defaults.headers["Authorization"] = `Bearer ${token}`;
+      setLoading(true);
       api
-        .get("/current")
+        .get("/users/current")
         .then((response) => {
-          const { username, email, name } = response.data;
-          setUser({ username, email, name });
-          Router.push(`users/${username}`);
+          const { username, profilePictureUrl, bio, realName, createdAt } =
+            response.data;
+          setUser({
+            username,
+            profilePictureUrl,
+            bio,
+            realName,
+            createdAt,
+          });
         })
         .catch((error) => {
           setError(error);

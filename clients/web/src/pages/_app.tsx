@@ -1,6 +1,7 @@
 import React from "react";
 import "../styles/globals.css";
-import { AuthProvider } from "../context/AuthContext";
+import { AuthContextProvider } from "../context/AuthContext";
+import Navbar from "../components/navbar";
 type AppProps = {
   Component: React.ComponentType;
   pageProps: any;
@@ -8,9 +9,10 @@ type AppProps = {
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <div className="antialiased text-black lowercase bg-white dark:bg-neutral-900 dark:text-white">
-      <AuthProvider userData={pageProps.userData}>
+      <AuthContextProvider>
+        <Navbar />
         <Component {...pageProps} />
-      </AuthProvider>
+      </AuthContextProvider>
     </div>
   );
 }

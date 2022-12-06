@@ -1,14 +1,17 @@
 import Image from "next/image";
 import React from "react";
 import Avatar from "react-avatar";
+import UserImage from "../userImage";
 
 const ProfileHeader = ({ user }) => {
-  console.log(user);
+  console.log("usuário", user);
+  if (!user) return null;
+
   const personalData = {
     username: user.username,
     realName: user.realName || undefined,
     profilePictureUrl: user.profilePictureUrl,
-    bio: user.bio,
+    bio: user?.bio,
   };
 
   const personalMusicData = {
@@ -42,22 +45,10 @@ const ProfileInfo = ({
 }: ProfileInfoProps) => {
   return (
     <div className="flex justify-center">
-      {profilePictureUrl ? (
-        <Image
-          src={profilePictureUrl}
-          alt="avatar"
-          width={128}
-          height={128}
-          className="rounded-full"
-        />
-      ) : (
-        <Avatar
-          name={realName || username}
-          size="128"
-          round={true}
-          className="rounded-full"
-        />
-      )}
+      <UserImage
+        profilePictureUrl={profilePictureUrl}
+        name={realName || username}
+      />
       <div className="flex flex-col justify-center px-5">
         <h1 className="text-3xl font-bold">{realName}</h1>
         <h1 className="text-xl">@{username}</h1>

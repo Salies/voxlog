@@ -1,21 +1,26 @@
 import React from "react";
 import Link from "next/link";
+import { useAuth } from "../../hooks/auth";
+import UserImage from "../userImage";
 
 const Navbar = () => {
   return (
-    <nav className="text-white bg-black">
-      <div className="container py-3 mx-auto">
-        <div className="items-center justify-between text-center md:flex">
-          <Link href="/">
-            <span className="font-mono text-3xl font-black">voxlog</span>
-          </Link>
-          <div className="flex items-center">
-            <NavItems />
+    <>
+      <nav className="sticky top-0 z-50 w-full text-white bg-gradient-to-r from-neutral-900 to-neutral-800 opacity-90 hover:opacity-100">
+        <div className="container py-3 mx-auto">
+          <div className="items-center justify-between text-center md:flex">
+            <Link href="/">
+              <span className="font-mono text-3xl font-black">voxlog</span>
+            </Link>
+            <div className="flex items-center">
+              <NavItems />
+            </div>
+            <Account />
           </div>
-          <Account />
         </div>
-      </div>
-    </nav>
+      </nav>
+      <div className="sticky top-0 w-full -z-50 blur"></div>
+    </>
   );
 };
 
@@ -54,15 +59,19 @@ const Item = ({ name, href }: ItemProps) => {
 };
 
 const Account = () => {
+  const { user } = useAuth();
+  const { username, realName, profilePictureUrl } = user;
   return (
-    <Link href="/profile">
+    <Link href={user.username ? `/users/${username}` : "/login"}>
       <div className="flex items-center justify-center mt-2 md:mt-0">
-        <img
-          src="https://github.com/becelli.png"
-          alt="avatar"
-          className="w-8 h-8 rounded-full"
-        />
-        <h1 className="mx-4 text-md">Gustavo</h1>
+        {/* <UserImage
+          profilePictureUrl={profilePictureUrl}
+          name={username}
+          sizeInPixels={32}
+        /> */}
+        <h1 className="mx-4 font-bold text-md">
+          {realName?.split(" ")[0] || username || "login"}
+        </h1>
       </div>
     </Link>
   );

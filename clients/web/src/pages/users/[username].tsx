@@ -11,7 +11,6 @@ import { UserDTO } from "../../utils/dtos/User";
 export default ({ user }: { user: UserDTO }) => {
   return (
     <>
-      <Navbar />
       <section className="md:w-full">
         <div className="container w-full mx-auto border-solid border-neutral-50 dark:border-neutral-800 border-x-2">
           <ProfileHeader user={user} />
@@ -37,6 +36,8 @@ export async function getServerSideProps(context: NextPageContext) {
     const { username } = context.query;
     const { data } = await api.get(`/users/${username}`);
     const user: UserDTO = data;
+
+    if (!user) throw new Error("User not found");
     return {
       props: {
         user,

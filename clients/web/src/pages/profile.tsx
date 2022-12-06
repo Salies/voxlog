@@ -11,7 +11,7 @@ const Profile = () => {
       <Navbar />
       <section className="md:w-full">
         <div className="container w-full mx-auto border-solid border-neutral-50 dark:border-neutral-800 border-x-2">
-          <ProfileHeader />
+          {/* <ProfileHeader  */}
           <div className="px-2 mt-5 md:flex">
             <div className="w-full md:border-r-2 md:border-neutral-100 dark:md:border-neutral-800 md:border-solid md:px-2">
               <ProfileStats />
