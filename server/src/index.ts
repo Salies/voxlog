@@ -20,8 +20,6 @@ app.use((req, res, next) => {
 
   console.log(req.method, req.url, 'at ', DateTime.local().toISO());
   console.log(
-    'Headers: ',
-    req.headers,
     '\nBody: ',
     req.body,
     'Params: ',

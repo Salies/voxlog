@@ -17,22 +17,23 @@ export class UserController {
     }
   }
 
-  async getCurrent(req: Request, res: Response) {
+  async get(req: Request, res: Response) {
     try {
-      const username = req.app.locals.username;
-      if (!username) res.status(401).json({ error: 'Unauthorized' });
+      const { username } = req.params;
       const user = await userModel.get(username);
-      res.status(200).json(user);
+
+      if (user) res.status(200).json(user);
+      else res.status(404).json({ error: 'User not found' });
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }
 
-  async getUserInfo(req: Request, res: Response) {
+  async getCurrent(req: Request, res: Response) {
     try {
-      const { username } = req.params;
-      const user = await userModel.getUserInfo(username);
+      const username = req.app.locals.username;
+      const user = await userModel.get(username);
 
       if (user) res.status(200).json(user);
       else res.status(404).json({ error: 'User not found' });

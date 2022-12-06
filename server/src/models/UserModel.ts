@@ -1,5 +1,13 @@
-import { DaysRange, PrismaClient, User, Scrobble } from '@prisma/client';
-import { Sql } from '@prisma/client/runtime';
+import {
+  Prisma,
+  DaysRange,
+  PrismaClient,
+  User,
+  Scrobble,
+} from '@prisma/client';
+import SuperJSON, { parse, serialize, stringify } from 'superjson';
+import { SuperJSONResult } from 'superjson/dist/types';
+
 import { UserCreateIn, UserOut, UserProfileOut } from '../utils/dtos/User';
 import { hashPassword, rangeToDays } from '../utils/helpers';
 
@@ -23,14 +31,15 @@ export default class UserModel {
     }
   }
 
-  async get(username: string): Promise<UserOut | null> {
+  async get(username: string): Promise<string | null> {
     try {
-      const user: User = await prisma.user.findUnique({
-        where: {
-          username,
-        },
-      });
-      return this._formatUser(user);
+      const user: UserOut[] = await prisma.$queryRaw<UserOut[]>(
+        Prisma.sql`SELECT "username", "email", "birthDate", "bio", "realName", "profilePictureUrl", "defaultTopArtistsRange", "defaultTopAlbumsRange", "defaultTopSongsRange", "createdAt", "updatedAt" FROM "User" WHERE "username" = ${username} LIMIT 1`,
+      );
+
+      if (!user) return null;
+      const serialized = stringify(user[0]);
+      return serialized;
     } catch (error) {
       throw error;
     }

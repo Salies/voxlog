@@ -2,7 +2,13 @@ import { DaysRange, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-async function main() {}
+async function main() {
+  // await prisma.$queryRawUnsafe(
+  //   `INSERT INTO "User" (id, name, email, password, "createdAt", "updatedAt") VALUES
+  //   ('1', 'John Doe', '
+  // )`,
+  // );
+}
 
 main()
   .then(async () => {

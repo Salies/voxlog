@@ -12,7 +12,7 @@ const userRoutes = Router({ mergeParams: true });
 routes.post("/", validateBody(UserCreateIn), userController.create);
 routes.get("/current", jwtMiddleware, userController.getCurrent);  
 routes.use("/:username", userRoutes);
-userRoutes.get("/", userController.getUserInfo);
+userRoutes.get("/", userController.get);
 userRoutes.get("/top-songs", userController.getTopSongs);
 
 export default routes;
