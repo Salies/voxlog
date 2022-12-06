@@ -1,22 +1,26 @@
 {
-	"compilerOptions": {
-		"experimentalDecorators": true,
-		"target": "es6",
-		"typeRoots": ["./src/@types", "./node_modules/@types", "./src/@types/external"],
-		"allowJs": true,
-		"skipLibCheck": true,
-		"strict": false,
-		"forceConsistentCasingInFileNames": true,
-		"noEmit": true,
-		"incremental": true,
-		"esModuleInterop": true,
-		"module": "CommonJS",
-		"moduleResolution": "node",
-		"isolatedModules": true,
-		"resolveJsonModule": true,
-		"allowSyntheticDefaultImports": true,
-		"sourceMap": true
-	},
-	"include": ["**/*.ts"],
-	"exclude": ["node_modules"]
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "target": "es6",
+    "typeRoots": [
+      "./src/@types",
+      "./node_modules/@types",
+      "./src/@types/external"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "incremental": true,
+    "esModuleInterop": true,
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
 }

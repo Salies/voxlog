@@ -1,9 +1,9 @@
-import { plainToInstance } from "class-transformer";
-import { Request, Response } from "express";
-import UserModel from "../models/UserModel";
-import { UserCreateIn, UserLoginIn } from "../utils/dtos/User";
-import { compareHash } from "../utils/helpers";
-import { generateToken } from "../utils/auth";
+import { plainToInstance } from 'class-transformer';
+import { Request, Response } from 'express';
+import UserModel from '../models/UserModel';
+import { UserCreateIn, UserLoginIn } from '../utils/dtos/User';
+import { compareHash } from '../utils/helpers';
+import { generateToken } from '../utils/auth';
 const userModel = new UserModel();
 
 export class AuthController {
@@ -20,10 +20,10 @@ export class AuthController {
         return res.status(200).json({ token });
       }
 
-      res.status(401).json({ error: "Invalid credentials" });
+      res.status(401).json({ error: 'Invalid credentials' });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: 'Internal server error' });
     }
   }
 
@@ -31,7 +31,7 @@ export class AuthController {
     try {
     } catch (error) {
       console.log(error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: 'Internal server error' });
     }
   }
 }

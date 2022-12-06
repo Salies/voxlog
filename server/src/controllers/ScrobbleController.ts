@@ -1,13 +1,13 @@
-import { Request, Response } from "express";
-import ScrobbleModel from "../models/ScrobbleModel";
-import axios from "axios";
-import { plainToInstance } from "class-transformer";
-import { UserLoginIn } from "../utils/dtos/User";
-import UserModel from "../models/UserModel";
-import { User } from "@prisma/client";
-import { compareHash } from "../utils/helpers";
-import { generateToken, generateApiKey } from "../utils/auth";
-import Levenshtein from "fast-levenshtein";
+import { Request, Response } from 'express';
+import ScrobbleModel from '../models/ScrobbleModel';
+import axios from 'axios';
+import { plainToInstance } from 'class-transformer';
+import { UserLoginIn } from '../utils/dtos/User';
+import UserModel from '../models/UserModel';
+import { User } from '@prisma/client';
+import { compareHash } from '../utils/helpers';
+import { generateToken, generateApiKey } from '../utils/auth';
+import Levenshtein from 'fast-levenshtein';
 
 const scrobbleModel = new ScrobbleModel();
 const userModel = new UserModel();
@@ -16,13 +16,13 @@ export default class UserController {
   create = async (req: Request, res: Response) => {
     try {
       let { track, artist, album, duration } = req.body;
-      const userId = req.app.locals.username || "cla9zjio50000746c89leuacf";
+      const userId = req.app.locals.username || 'cla9zjio50000746c89leuacf';
 
       const mbData = await this.queryForRecording(
         track,
         artist,
         album,
-        duration
+        duration,
       );
       console.log;
       if (mbData) {
@@ -37,7 +37,7 @@ export default class UserController {
       }
     } catch (error) {
       // console.log(error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: 'Internal server error' });
     }
   };
 
@@ -45,17 +45,17 @@ export default class UserController {
     track: string,
     artist: string,
     album: string,
-    duration: number
+    duration: number,
   ) => {
     try {
       let query = `http://musicbrainz.org/ws/2/recording?query=artist:${artist} AND recording:${track}`;
       const albumQuery = ` AND release:${album}`;
-      query += album ? albumQuery : "";
-      query += "&limit=1&offset=0&fmt=json";
+      query += album ? albumQuery : '';
+      query += '&limit=1&offset=0&fmt=json';
       // query with 3 seconds of timeout
       const { data } = await axios.get(query, { timeout: 3000 });
 
-      if (!data.recordings.length) throw new Error("No recording found");
+      if (!data.recordings.length) throw new Error('No recording found');
 
       const recording = data.recordings[0];
 
@@ -63,7 +63,7 @@ export default class UserController {
       const threshold = duration * 0.15;
       const recordingDuration = recording.length / 1000;
       const durationDiff = Math.abs(recordingDuration - duration);
-      if (durationDiff > threshold) throw new Error("Duration mismatch");
+      if (durationDiff > threshold) throw new Error('Duration mismatch');
 
       // // Verify if the title is a near match
       const recordingTitle = recording.title;
@@ -71,14 +71,14 @@ export default class UserController {
       const titleDiff = Levenshtein.get(recordingTitle, track, {
         useCollator: true,
       });
-      if (titleDiff > 3) throw new Error("Title mismatch");
+      if (titleDiff > 3) throw new Error('Title mismatch');
 
       // Verify if the artist is a near match
-      const artistName = recording["artist-credit"][0].artist.name;
+      const artistName = recording['artist-credit'][0].artist.name;
       const artistDiff = Levenshtein.get(artistName, artist, {
         useCollator: true,
       });
-      if (artistDiff > 3) throw new Error("Artist mismatch");
+      if (artistDiff > 3) throw new Error('Artist mismatch');
 
       // // Verify if some album is a near match
 
@@ -96,12 +96,12 @@ export default class UserController {
         }
       } else release = recording.releases[0];
 
-      if (!release) throw new Error("Album mismatch");
+      if (!release) throw new Error('Album mismatch');
 
       // query for the song and album CoverArt
       let coverArtUrl: string = undefined;
       try {
-        const releaseGroupMbid = recording.releases[0]["release-group"].id;
+        const releaseGroupMbid = recording.releases[0]['release-group'].id;
         const coverArtQuery = `http://coverartarchive.org/release-group/${releaseGroupMbid}`;
         const { data: coverArtData } = await axios.get(coverArtQuery);
         coverArtUrl = coverArtData.images[0].thumbnails.small;
@@ -120,7 +120,7 @@ export default class UserController {
         coverArtUrl: coverArtUrl,
       };
 
-      const artistId = recording["artist-credit"][0].artist.id;
+      const artistId = recording['artist-credit'][0].artist.id;
       const artistMb = { mbArtistId: artistId, name: artist };
       return {
         song: songMb,
@@ -128,7 +128,7 @@ export default class UserController {
         artist: artistMb,
       };
     } catch (error) {
-      console.log("Failed to query MusicBrainz for recording", error);
+      console.log('Failed to query MusicBrainz for recording', error);
       return null;
     }
   };
@@ -144,10 +144,10 @@ export default class UserController {
         const token = await generateApiKey(userData.username);
         res.status(200).json({ token });
       }
-      res.status(401).json({ error: "Invalid credentials" });
+      res.status(401).json({ error: 'Invalid credentials' });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: 'Internal server error' });
     }
   }
 }

@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
-import UserModel from "../models/UserModel";
-import { UserCreateIn } from "../utils/dtos/User";
-import { plainToInstance } from "class-transformer";
+import { Request, Response } from 'express';
+import UserModel from '../models/UserModel';
+import { UserCreateIn } from '../utils/dtos/User';
+import { plainToInstance } from 'class-transformer';
 
 const userModel = new UserModel();
 
@@ -13,7 +13,19 @@ export class UserController {
       res.status(201).json(user);
     } catch (error) {
       console.log(error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  async getCurrent(req: Request, res: Response) {
+    try {
+      const username = req.app.locals.username;
+      if (!username) res.status(401).json({ error: 'Unauthorized' });
+      const user = await userModel.get(username);
+      res.status(200).json(user);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Internal server error' });
     }
   }
 
@@ -23,10 +35,10 @@ export class UserController {
       const user = await userModel.getUserInfo(username);
 
       if (user) res.status(200).json(user);
-      else res.status(404).json({ error: "User not found" });
+      else res.status(404).json({ error: 'User not found' });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: 'Internal server error' });
     }
   }
 
@@ -38,10 +50,10 @@ export class UserController {
       const topSongs = await userModel.getTopSongs(username, range);
 
       if (topSongs) res.status(200).json(topSongs);
-      else res.status(404).json({ error: "User not found" });
+      else res.status(404).json({ error: 'User not found' });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: 'Internal server error' });
     }
   }
 }

@@ -6,9 +6,9 @@ services:
       POSTGRES_USER: voxlog
       POSTGRES_DB: voxlog
     ports:
-      - "3254:5432"
+      - '3254:5432'
     restart: always
-    container_name: voxlog
+    container_name: voxlog-postgres
 
   # web:
   #     build: .

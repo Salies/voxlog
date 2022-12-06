@@ -1,6 +1,6 @@
-import { PrismaClient, Scrobble, Artist, Album, Song } from "@prisma/client";
+import { PrismaClient, Scrobble, Artist, Album, Song } from '@prisma/client';
 
-import { DateTime } from "luxon";
+import { DateTime } from 'luxon';
 
 const prisma = new PrismaClient();
 
@@ -77,7 +77,7 @@ export default class ScrobbleModel {
           },
         });
         return scrobble;
-      }
+      },
     );
 
     return scrobble;
