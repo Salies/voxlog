@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import UserModel from '../models/UserModel';
 import { UserCreateIn } from '../utils/dtos/User';
-import { plainToInstance } from 'class-transformer';
+import { stringify } from 'superjson';
 
 const userModel = new UserModel();
 
@@ -9,8 +9,12 @@ export class UserController {
   async create(req: Request, res: Response) {
     try {
       const userData: UserCreateIn = req.body;
+
       const user = await userModel.create(userData);
-      res.status(201).json(user);
+      if (!user) return res.status(400).json({ error: 'User already exists' });
+
+      const stringifiedUser = stringify(user);
+      res.status(201).json(stringifiedUser);
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: 'Internal server error' });
@@ -20,10 +24,12 @@ export class UserController {
   async get(req: Request, res: Response) {
     try {
       const { username } = req.params;
-      const user = await userModel.get(username);
 
-      if (user) res.status(200).json(user);
-      else res.status(404).json({ error: 'User not found' });
+      const user = await userModel.get(username);
+      if (!user) return res.status(404).json({ error: 'User not found' });
+
+      const stringifiedUser = stringify(user);
+      res.status(200).json(stringifiedUser);
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: 'Internal server error' });
@@ -33,10 +39,12 @@ export class UserController {
   async getCurrent(req: Request, res: Response) {
     try {
       const username = req.app.locals.username;
-      const user = await userModel.get(username);
 
-      if (user) res.status(200).json(user);
-      else res.status(404).json({ error: 'User not found' });
+      const user = await userModel.get(username);
+      if (!user) return res.status(404).json({ error: 'User not found' });
+
+      const stringifiedUser = stringify(user);
+      res.status(200).json(stringifiedUser);
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: 'Internal server error' });

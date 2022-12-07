@@ -24,7 +24,7 @@ export default class UserController {
         album,
         duration,
       );
-      console.log;
+
       if (mbData) {
         const { song, artist, album } = mbData;
         const scrobble = await scrobbleModel.create({

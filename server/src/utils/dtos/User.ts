@@ -64,7 +64,7 @@ export class UserLoginIn {
   password: string;
 }
 
-export class UserOut {
+export type UserOut = {
   userId: string;
   username: string;
   email: string;
@@ -77,51 +77,4 @@ export class UserOut {
   defaultTopSongsRange: string;
   createdAt: Date;
   updatedAt: Date;
-}
-
-export class UserHeaderOut {
-  username: string;
-  profilePictureUrl?: string;
-  realName?: string;
-  bio?: string;
-  totalArtists: number;
-  totalAlbums: number;
-  totalSongs: number;
-  totalHours: number;
-}
-
-export class UserRankingOut {
-  topArtists: ArtistCardOut[];
-  topAlbums: AlbumCardOut[];
-  topSongs: SongCardOut[];
-}
-
-export class ArtistCardOut {
-  artistName: string;
-  artistPictureUrl?: string;
-  artistProfileUrl: string;
-}
-
-export class AlbumCardOut {
-  albumName: string;
-  albumPictureUrl?: string;
-  albumProfileUrl: string;
-}
-
-export class SongCardOut {
-  songName: string;
-  songPictureUrl?: string;
-  songProfileUrl: string;
-}
-
-export class EventCardOut {
-  artistName: string;
-  date: string;
-  location: string;
-}
-export class UserProfileOut {
-  headerInfo: UserHeaderOut;
-  rankingInfo: UserRankingOut;
-  recentTracks: SongCardOut[];
-  recentEvents: EventCardOut[];
-}
+};

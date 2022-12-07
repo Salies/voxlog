@@ -4,10 +4,13 @@ import scrobbleRoutes from './routes/ScrobbleRoutes';
 const app = express();
 import userRoutes from './routes/UserRoutes';
 import authRoutes from './routes/AuthRoutes';
+import songsRoutes from './routes/SongsRoutes';
+// import albumsRoutes from './routes/AlbumsRoutes';
+// import artistsRoutes from './routes/ArtistsRoutes';
 import { DateTime } from 'luxon';
 
 app.use(express.json());
-// CORS - enable cross-origin resource sharing
+// CORS - enable cross-origin resource sharing\
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
@@ -18,7 +21,7 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
   }
 
-  console.log(req.method, req.url, 'at ', DateTime.local().toISO());
+  console.log('REQUEST', req.method, req.url, 'at ', DateTime.local().toISO());
   console.log(
     '\nBody: ',
     req.body,
@@ -32,6 +35,11 @@ app.use((req, res, next) => {
 
 app.use('/api', scrobbleRoutes);
 app.use('/users', userRoutes);
+
+app.use('/songs', songsRoutes);
+// app.use('/albums', resourcesRoutes);
+// app.use('/artists', resourcesRoutes);
+
 app.use('/login', authRoutes);
 
 app.listen(8000);
