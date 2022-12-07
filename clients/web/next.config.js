@@ -8,6 +8,12 @@ module.exports = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "http",
+        hostname: "coverartarchive.org",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   experimental: {

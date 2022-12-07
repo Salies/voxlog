@@ -1,15 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useEffect } from "react";
+import api from "../../lib/axios";
+import { parse } from "superjson";
+import { UserRecentTracksDTO } from "../../utils/dtos/User";
+import { DateTime, Interval } from "luxon";
+import Avatar from "react-avatar";
+import Image from "next/image";
 
-const ProfileStats = () => {
+export default function ProfileStats(username: { username: string }) {
   return (
     <div className="flex flex-wrap items-center justify-center w-full">
       <TopArtists />
       <TopAlbums />
-      <RecentTracks />
+      <RecentTracks username={username.username} />
     </div>
   );
-};
+}
 
 const TopArtists = () => {
   const artists = [
@@ -109,83 +116,36 @@ const Card = ({ title, image, link }: CardProps) => {
   );
 };
 
-const RecentTracks = () => {
-  const tracks = [
-    [
-      "Adoniran Barbosa",
-      "Saudosa Maloca",
-      "https://i.scdn.co/image/ab67616d0000b2732253c41bfeac02997def39e2",
-      "Feb 25",
-      "/song/xyz",
-    ],
-    [
-      "Metallica",
-      "Master of Puppets",
-      "https://i.scdn.co/image/ab67616d0000b273668e3aca3167e6e569a9aa20",
-      "Feb 25",
-      "/song/xyz",
-    ],
-    [
-      "System of a Down",
-      "B.Y.O.B.",
-      "https://i.scdn.co/image/ab67616d0000b273c65f8d04502eeddbdd61fa71",
-      "Feb 25",
-      "/song/xyz",
-    ],
-    [
-      "Tears for Fears",
-      "Everybody Wants To Rule The World",
-      "https://i.scdn.co/image/ab67616d0000b27322463d6939fec9e17b2a6235",
-      "Jan 25",
-      "/song/xyz",
-    ],
-    [
-      "Tears for Fears",
-      "Advice For The Young At Heart",
-      "https://i.scdn.co/image/ab67706c0000bebbfb6bc56011b623687d4b1913",
-      "Jan 25",
-      "/song/xyz",
-    ],
-    [
-      "Raça Negra",
-      "Preciso Ter Alguém",
-      "https://lastfm.freetls.fastly.net/i/u/500x500/3602273ef0e19ee8f567ca79da6cf3df.jpg",
-      "Jan 25",
-      "/song/xyz",
-    ],
-    [
-      "Djavan",
-      "Linha do Equador",
-      "https://lastfm.freetls.fastly.net/i/u/500x500/5c6cf4bc2d15d9723e16c1fc2c709fc5.jpg",
-      "Jan 25",
-      "/song/xyz",
-    ],
-  ];
-  return <RecentTracksListing title="Recent Tracks" items={tracks} />;
-};
-
 type RecentTracksListingProps = {
   title: string;
   items: Array<Array<string>>;
 };
-const RecentTracksListing = ({ title, items }: RecentTracksListingProps) => {
+const RecentTracks = ({ username }: { username: string }) => {
   let counter = 0;
+  const [scrobbles, setScrobbles] = useState<UserRecentTracksDTO[]>([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      const response = await api.get(`/users/${username}/recent-tracks`);
+      const scrobbles = parse(response.data) as UserRecentTracksDTO[];
+      setScrobbles(scrobbles);
+    };
+    fetchItems();
+  }, []);
+
   return (
     <section className="flex flex-col justify-between w-full">
-      <h1 className="text-3xl font-bold text-center md:text-left">{title}</h1>
+      <h1 className="text-3xl font-bold text-center md:text-left">
+        Recent Tracks
+      </h1>
       <div className="mx-1">
-        {items.map((item) => {
-          const [artist, title, cover, date, link] = item;
-
+        {scrobbles.map((scrobble) => {
+          counter++;
           return (
             <ScrobbleInstance
-              key={counter++}
-              cover={cover}
-              title={title}
-              artist={artist}
-              date={date}
-              link={link}
-            />
+              key={counter}
+              scrobble={scrobble}
+            ></ScrobbleInstance>
           );
         })}
       </div>
@@ -193,39 +153,63 @@ const RecentTracksListing = ({ title, items }: RecentTracksListingProps) => {
   );
 };
 
-type ScrobbleInstanceProps = {
-  cover: string;
-  title: string;
-  artist: string;
-  date: string;
-  link: string;
-};
-const ScrobbleInstance = ({
-  cover,
-  title,
-  artist,
-  date,
-  link,
-}: ScrobbleInstanceProps) => {
+const ScrobbleInstance = ({ scrobble }: { scrobble: UserRecentTracksDTO }) => {
+  function formatDate(date: Date) {
+    const datetime: DateTime = DateTime.fromJSDate(date);
+
+    const diff = Interval.fromDateTimes(datetime, DateTime.local()).toDuration([
+      "years",
+      "months",
+      "days",
+      "hours",
+      "minutes",
+    ]);
+
+    if (datetime.hasSame(DateTime.local(), "day")) {
+      return datetime.toFormat("HH:mm");
+      // if same week, show day of week
+    } else if (datetime.hasSame(DateTime.local(), "week")) {
+      return datetime.toFormat("ccc");
+      // if same year, show month and day
+    } else if (datetime.hasSame(DateTime.local(), "year")) {
+      return datetime.toFormat("MMM dd");
+      // else show full date
+    } else {
+      return datetime.toFormat("MMM dd yyyy");
+    }
+  }
+
   return (
     <div className="flex items-center w-full p-2 mt-2 transition-all duration-200 ease-in-out md:mt-1 hover:scale-105 hover:shadow-md hover:shadow-neutral-200 hover:dark:shadow-black">
       <div className="flex items-center justify-between w-full">
-        <img
-          src={cover}
-          alt={title}
-          className="w-10 transition-all ease-in-out rounded-sm hover:scale-150 duration-50 "
-        />
-        <Link href={link}>
+        {scrobble.song.coverArtUrl && scrobble.album.coverArtUrl ? (
+          <Image
+            src={scrobble.song.coverArtUrl || scrobble.album.coverArtUrl}
+            alt=""
+            width={40}
+            height={40}
+            className="w-10 transition-all ease-in-out rounded-sm hover:scale-150 duration-50 "
+          />
+        ) : (
+          <Avatar
+            name={scrobble.song.songTitle}
+            size="40"
+            className="w-10 transition-all ease-in-out rounded-sm hover:scale-150 duration-50 "
+          />
+        )}
+        <Link href={`/songs/${scrobble.song.songId}`}>
           <div className="flex flex-col text-center">
-            <span className="font-semibold text-md">{title}</span>
-            <span className="text-sm font-thin">{artist}</span>
+            <span className="font-semibold text-md">
+              {scrobble.song.songTitle}
+            </span>
+            <span className="text-sm font-thin">{scrobble.artist.name}</span>
           </div>
         </Link>
-        <span className="hidden text-xs font-semibold md:block">{date}</span>
+        <span className="hidden text-xs font-semibold md:block">
+          {formatDate(scrobble.scrobbleCreatedAt)}
+        </span>
         <span className="block text-xs font-semibold md:hidden"></span>
       </div>
     </div>
   );
 };
-
-export default ProfileStats;

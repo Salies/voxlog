@@ -21,3 +21,19 @@ export type UserDTO = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type UserRecentTracksDTO = {
+  scrobbleCreatedAt: Date;
+  song: {
+    songId: string;
+    songTitle: string;
+    coverArtUrl: string;
+  };
+  album: {
+    coverArtUrl: string;
+  };
+  artist: {
+    artistId: string;
+    name: string;
+  };
+};

@@ -16,7 +16,7 @@ export default ({ user }: { user: UserDTO }) => {
           <ProfileHeader user={user} />
           <div className="px-2 mt-5 md:flex">
             <div className="w-full md:border-r-2 md:border-neutral-100 dark:md:border-neutral-800 md:border-solid md:px-2">
-              <ProfileStats />
+              <ProfileStats username={user?.username} />
             </div>
             <section className="container w-full mx-auto text-center md:w-6/12 md:text-left">
               <div className="items-center px-6 sm:flex md:flex-col justify-evenly">
