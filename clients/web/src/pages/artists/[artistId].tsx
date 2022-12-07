@@ -2,27 +2,24 @@ import React from "react";
 import { parse } from "superjson";
 import api from "../../lib/axios";
 import { NextPageContext } from "next";
-import { Album } from "../../utils/dtos/Resources";
+import { Artist } from "../../utils/dtos/Resources";
 import Image from "next/image";
+import UserImage from "../../components/userImage/index";
 
-export default function ({ album }: { album: Album }) {
+export default function ({ artist }: { artist: Artist }) {
   return (
     <div className="w-full h-screen">
       <div className="items-center w-full mx-auto mt-8">
         <div className="">
-          <Image
-            src={album.coverArtUrl}
-            alt={album.title}
-            width={200}
-            height={200}
-            className="mx-auto rounded-md shadow-xl dark:shadow-none"
+          <UserImage
+            profilePictureUrl={artist.artUrl}
+            name={artist.name}
+            sizeInPixels={200}
+            className="mx-auto bg-red-100"
           />
           <div>
             <h1 className="mt-4 text-5xl font-extrabold text-center">
-              {album.title}
-            </h1>
-            <h1 className="text-2xl font-semibold tracking-tight text-center">
-              {album.fromArtist.name}
+              {artist.name}
             </h1>
           </div>
         </div>
@@ -33,13 +30,14 @@ export default function ({ album }: { album: Album }) {
 
 export async function getServerSideProps(context: NextPageContext) {
   try {
-    const { songId } = context.query;
-    const { data } = await api.get(`/albums/${songId}`);
-    const album = parse(data);
-    if (!album) throw new Error("Album not found");
+    const { artistId } = context.query;
+    const { data } = await api.get(`/artists/${artistId}`);
+    const artist = parse(data);
+
+    if (!artist) throw new Error("Artist not found");
     return {
       props: {
-        album,
+        artist,
       },
     };
   } catch (error) {

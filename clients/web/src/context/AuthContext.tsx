@@ -4,7 +4,7 @@ import React from "react";
 // store token in a secure cookie
 import { setCookie, parseCookies, destroyCookie } from "nookies";
 import api from "../lib/axios";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import { parse, stringify } from "superjson";
 import { UserDTO } from "../utils/dtos/User";
 import { DateTime } from "luxon";
@@ -19,6 +19,7 @@ interface AuthContextProps {
 export const AuthContext = createContext({} as AuthContextProps);
 
 export const AuthContextProvider = ({ children }) => {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({} as UserDTO | null);
   const [error, setError] = useState(null);
@@ -102,10 +103,10 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (error) {
-      Router.push("/404");
-      logout();
-    }
+    // if (error) {
+    // Router.push("/404");
+    // logout();
+    // }
   }, [error]);
 
   return (

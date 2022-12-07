@@ -46,8 +46,9 @@ const ProfileInfo = ({
   return (
     <div className="flex justify-center">
       <UserImage
-        profilePictureUrl={profilePictureUrl}
+        url={profilePictureUrl}
         name={realName || username}
+        sizeInPixels={128}
       />
       <div className="flex flex-col justify-center px-5">
         <h1 className="text-3xl font-bold">{realName}</h1>

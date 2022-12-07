@@ -197,14 +197,16 @@ const ScrobbleInstance = ({ scrobble }: { scrobble: UserRecentTracksDTO }) => {
             className="w-10 transition-all ease-in-out rounded-sm hover:scale-150 duration-50 "
           />
         )}
-        <Link href={`/songs/${scrobble.song.songId}`}>
-          <div className="flex flex-col text-center">
+        <div className="flex flex-col text-center ">
+          <Link href={`/songs/${scrobble.song.songId}`}>
             <span className="font-semibold text-md">
               {scrobble.song.songTitle}
             </span>
+          </Link>
+          <Link href={`/artists/${scrobble.artist.artistId}`}>
             <span className="text-sm font-thin">{scrobble.artist.name}</span>
-          </div>
-        </Link>
+          </Link>
+        </div>
         <span className="hidden text-xs font-semibold md:block">
           {formatDate(scrobble.scrobbleCreatedAt)}
         </span>

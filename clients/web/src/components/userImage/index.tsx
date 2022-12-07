@@ -1,23 +1,31 @@
 import Image from "next/image";
 import Avatar from "react-avatar";
 
-const UserImage = ({ profilePictureUrl, name, sizeInPixels = 128 }) => {
+const UserImage = ({
+  url,
+  name,
+  sizeInPixels = 128,
+
+  ...rest
+}) => {
   return (
     <>
-      {profilePictureUrl ? (
+      {url ? (
         <Image
-          src={profilePictureUrl}
+          src={url}
           alt="avatar"
           width={sizeInPixels}
           height={sizeInPixels}
           className="rounded-full"
+          {...rest}
         />
       ) : (
         <Avatar
           name={name}
           size={sizeInPixels.toString()}
           round={true}
-          className={`rounded-full w-16 h-16`}
+          className="items-center w-16 h-16 mx-auto rounded-full"
+          {...rest}
         />
       )}
     </>
