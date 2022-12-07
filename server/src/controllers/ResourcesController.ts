@@ -18,5 +18,31 @@ export default class ResourcesController {
     }
   }
 
+  async getAlbumById(req: Request, res: Response) {
+    try {
+      const { albumId } = req.params;
+      const album = await resourcesModel.getAlbumById(albumId);
+      console.log('album', album);
+      const stringifiedAlbum = stringify(album);
+      return res.status(200).json(stringifiedAlbum);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  async getArtistById(req: Request, res: Response) {
+    try {
+      const { artistId } = req.params;
+      const artist = await resourcesModel.getArtistById(artistId);
+      console.log('artist', artist);
+      const stringifiedArtist = stringify(artist);
+      return res.status(200).json(stringifiedArtist);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
   // async get
 }

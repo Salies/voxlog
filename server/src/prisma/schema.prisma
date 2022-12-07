@@ -35,25 +35,28 @@ model Scrobble {
   scrobbleId String @id @default(cuid())
   userId String
   user User @relation(fields: [userId], references: [userId])
-  songId String
-  song Song @relation(fields: [songId], references: [songId])
+  
+  songId String?
+  song Song? @relation(fields: [songId], references: [songId])
 
   createdAt DateTime @default(now()) @db.Timestamp(0)
 }
 
 model Song {
-  songId String @id @default(cuid())
+  songId String @id @db.VarChar(16) // isrc
+
   albumId String
-  title String @db.VarChar(100)
+  songTitle String @db.VarChar(100)
   durationInSeconds Int @db.Integer
 
-  mbRecordingId String? @unique
-  coverArtUrl String? @db.VarChar(256)
+  coverArtUrl String? @db.VarChar(256)  
+  lastSynced DateTime? @db.Timestamp(0)
   
   scrobbles Scrobble[]
   
   inAlbum Album @relation(fields: [albumId], references: [albumId])
 }
+
 
 model Album {
   albumId String @id @default(cuid())

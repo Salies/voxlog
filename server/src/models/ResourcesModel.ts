@@ -19,7 +19,7 @@ export default class ResourcesModel {
       FROM "Song" \
       INNER JOIN "Album" ON "Album"."albumId" = "Song"."albumId" \
       INNER JOIN "Artist" ON "Artist"."artistId" = "Album"."artistId" \
-      WHERE "songId" = ${songId}
+      WHERE "songId" = ${songId} LIMIT 1;
     `);
 
     const song: Song = {
@@ -45,7 +45,7 @@ export default class ResourcesModel {
     const artistData: any[] = await prisma.$queryRaw(sql`
       SELECT "Artist"."artistId" as "artistId", "Artist"."name" AS "artistName", "Artist"."artUrl" AS "artistArtUrl" \
       FROM "Artist" \
-      WHERE "artistId" = ${artistId}
+      WHERE "artistId" = ${artistId} LIMIT 1;
     `);
 
     if (!artistData) return null;
@@ -73,7 +73,7 @@ export default class ResourcesModel {
       SELECT "Album"."albumId" as "albumId", "Album"."title" AS "albumTitle", "Album"."coverArtUrl" AS "coverArtUrl", \
       "Artist"."artistId" as "artistId", "Artist"."name" AS "artistName", "Artist"."artUrl" AS "artistArtUrl"
       FROM "Artist" \
-      WHERE "albumId" = ${albumId}
+      WHERE "albumId" = ${albumId} LIMIT 1;
     `);
 
     if (!albumData) return null;

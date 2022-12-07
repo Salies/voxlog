@@ -5,8 +5,8 @@ const app = express();
 import userRoutes from './routes/UserRoutes';
 import authRoutes from './routes/AuthRoutes';
 import songsRoutes from './routes/SongsRoutes';
-// import albumsRoutes from './routes/AlbumsRoutes';
-// import artistsRoutes from './routes/ArtistsRoutes';
+import albumsRoutes from './routes/AlbumsRoutes';
+import artistsRoutes from './routes/ArtistsRoutes';
 import { DateTime } from 'luxon';
 
 app.use(express.json());
@@ -37,8 +37,8 @@ app.use('/api', scrobbleRoutes);
 app.use('/users', userRoutes);
 
 app.use('/songs', songsRoutes);
-// app.use('/albums', resourcesRoutes);
-// app.use('/artists', resourcesRoutes);
+app.use('/albums', albumsRoutes);
+app.use('/artists', artistsRoutes);
 
 app.use('/login', authRoutes);
 
