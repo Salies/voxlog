@@ -13,6 +13,8 @@ routes.post("/", validateBody(UserCreateIn), userController.create);
 routes.get("/current", jwtMiddleware, userController.getCurrent);  
 routes.use("/:username", userRoutes);
 userRoutes.get("/", userController.get);
-userRoutes.get("/top-songs", userController.getTopSongs);
+userRoutes.get("/stats", userController.getStats);
+userRoutes.get("/recent-tracks", userController.getRecentTracks);
+// userRoutes.get("/top-songs", userController.getTopSongs);
 
 export default routes;

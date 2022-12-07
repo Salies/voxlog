@@ -51,18 +51,51 @@ export class UserController {
     }
   }
 
-  async getTopSongs(req: Request, res: Response) {
+  async getStats(req: Request, res: Response) {
     try {
       const { username } = req.params;
-      const { range: rangeString } = req.query;
-      const range = parseInt(rangeString as string);
-      const topSongs = await userModel.getTopSongs(username, range);
+      const totalHours = await userModel.getTotalHours(username);
 
-      if (topSongs) res.status(200).json(topSongs);
-      else res.status(404).json({ error: 'User not found' });
+      // const stringifiedTotalHours = stringify(totalHours);
+
+      return res.status(200).json({ totalHours });
+      // if (totalHours)
+      // else res.status(404).json({ error: 'User not found' });
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }
+
+  async getRecentTracks(req: Request, res: Response) {
+    try {
+      const { username } = req.params;
+      const { range: rangeString } = req.query;
+      const range = parseInt(rangeString as string) || 10;
+      const recentTracks = await userModel.getRecentScrobbles(username, range);
+      if (!recentTracks)
+        return res.status(404).json({ error: 'User not found' });
+
+      const stringifiedRecentTracks = stringify(recentTracks);
+      return res.status(200).json(stringifiedRecentTracks);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // async getTopSongs(req: Request, res: Response) {
+  //   try {
+  //     const { username } = req.params;
+  //     const { range: rangeString } = req.query;
+  //     const range = parseInt(rangeString as string);
+  //     const topSongs = await userModel.getTopSongs(username, range);
+
+  //     if (topSongs) res.status(200).json(topSongs);
+  //     else res.status(404).json({ error: 'User not found' });
+  //   } catch (error) {
+  //     console.log(error);
+  //     res.status(500).json({ error: 'Internal server error' });
+  //   }
+  // }
 }

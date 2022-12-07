@@ -51,23 +51,20 @@ export default class ScrobbleModel {
         // also add a barrier to a song that was rapidly skipped
 
         const durationInSec = Math.floor(song.durationInSeconds);
-        const minSecs = Math.min(durationInSec, 60);
 
-        const existingScrobble = await prisma.scrobble.findFirst({
-          where: {
-            userId,
-            createdAt: {
-              gte: DateTime.now().minus({ seconds: durationInSec }).toJSDate(),
-              // gte: DateTime.now().minus({ seconds: minSecs }).toJSDate(),/
-            },
-          },
-        });
-        if (existingScrobble) {
-          // if (existingScrobble.songId !== songData.songId) {
-          //   if (durationInSec > 60) return null; // if the song is longer than 60 seconds, then it's probably not a skip
-          // } else return null;
-          return null;
-        }
+        // const existingScrobble = await prisma.scrobble.findFirst({
+        //   where: {
+        //     userId,
+        //     createdAt: {
+        //       gte: DateTime.now().minus({ seconds: durationInSec }).toJSDate(),
+        //       // gte: DateTime.now().minus({ seconds: minSecs }).toJSDate(),/
+        //     },
+        //   },
+        // });
+
+        // if (existingScrobble) {
+        //   return null;
+        // }
 
         //Otherwise create the scrobble
         const scrobble = await prisma.scrobble.create({

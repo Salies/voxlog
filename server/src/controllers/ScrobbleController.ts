@@ -16,7 +16,7 @@ export default class UserController {
   create = async (req: Request, res: Response) => {
     try {
       let { track, artist, album, duration } = req.body;
-      const userId = req.app.locals.username || 'cla9zjio50000746c89leuacf';
+      const userId = req.app.locals.username || 'clb44245j0000cm19eq78gtjh';
 
       const mbData = await this.queryForRecording(
         track,

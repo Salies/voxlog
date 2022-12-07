@@ -5,7 +5,7 @@ import {
   Artist as PArtist,
   Prisma,
 } from '@prisma/client';
-import { Song } from '../utils/dtos/Resources';
+import { Song, Artist, Album } from '../utils/dtos/Resources';
 
 const prisma = new PrismaClient();
 const sql = Prisma.sql;
@@ -39,5 +39,64 @@ export default class ResourcesModel {
       },
     };
     return song;
+  }
+
+  async getArtistById(artistId: string): Promise<Artist | null> {
+    const artistData: any[] = await prisma.$queryRaw(sql`
+      SELECT "Artist"."artistId" as "artistId", "Artist"."name" AS "artistName", "Artist"."artUrl" AS "artistArtUrl" \
+      FROM "Artist" \
+      WHERE "artistId" = ${artistId}
+    `);
+
+    if (!artistData) return null;
+    /*
+    const topSongsArtist: any[] = await prisma.$queryRaw(sql`
+      SELECT "Song"."title", "Song"."durationInSeconds", Count("Scrobble".ScrobbleId)
+      FROM "Scrobble" \
+      INNER JOIN "Song" ON "Scrobble"."songId" = "Song"."songId" \
+      INNER JOIN "Album" ON "Album"."albumId" = "Song"."albumId" \
+      WHERE "Album"."artistId" = ${artistId}
+    `);
+    */
+
+    const artist = {
+      artistId: artistData[0].artistId,
+      name: artistData[0].artistName,
+      artUrl: artistData[0].artistArtUrl,
+    };
+
+    return artist;
+  }
+
+  async getAlbumById(albumId: string): Promise<Album | null> {
+    const albumData: any[] = await prisma.$queryRaw(sql`
+      SELECT "Album"."albumId" as "albumId", "Album"."title" AS "albumTitle", "Album"."coverArtUrl" AS "coverArtUrl", \
+      "Artist"."artistId" as "artistId", "Artist"."name" AS "artistName", "Artist"."artUrl" AS "artistArtUrl"
+      FROM "Artist" \
+      WHERE "albumId" = ${albumId}
+    `);
+
+    if (!albumData) return null;
+    /*
+    const topSongsArtist: any[] = await prisma.$queryRaw(sql`
+      SELECT "Song"."title", "Song"."durationInSeconds", Count("Scrobble".ScrobbleId)
+      FROM "Scrobble" \
+      INNER JOIN "Song" ON "Scrobble"."songId" = "Song"."songId" \
+      INNER JOIN "Album" ON "Album"."albumId" = "Song"."albumId" \
+      WHERE "Album"."artistId" = ${artistId}
+    `);
+    */
+
+    const album: Album = {
+      albumId: albumData[0].albumId,
+      title: albumData[0].title,
+      coverArtUrl: albumData[0].coverArt,
+      fromArtist: {
+        artistId: albumData[0].artistId,
+        name: albumData[0].artistName,
+        artUrl: albumData[0].artistArtUrl,
+      },
+    };
+    return album;
   }
 }
