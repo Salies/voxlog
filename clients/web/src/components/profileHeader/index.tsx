@@ -2,9 +2,9 @@ import Image from "next/image";
 import React from "react";
 import Avatar from "react-avatar";
 import UserImage from "../userImage";
+import { UserDTO } from "../../utils/dtos/User";
 
-const ProfileHeader = ({ user }) => {
-  console.log("usuário", user);
+const ProfileHeader = ({ user }: { user?: UserDTO }) => {
   if (!user) return null;
 
   const personalData = {
@@ -22,7 +22,7 @@ const ProfileHeader = ({ user }) => {
   };
 
   return (
-    <div className="w-full px-4 py-6 bg-neutral-100 dark:bg-neutral-800">
+    <div className="w-full px-4 py-6 from-white via-neutral-200 to-white bg-gradient-to-tl dark:from-neutral-800 dark:via-neutral-900 dark:to-neutral-800">
       <section className="flex flex-wrap items-center justify-between w-full">
         <ProfileInfo {...personalData} />
         <ProfileMusicStatus {...personalMusicData} />

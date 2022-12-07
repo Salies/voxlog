@@ -8,7 +8,7 @@ type AppProps = {
 };
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <div className="antialiased text-black lowercase bg-white dark:bg-neutral-900 dark:text-white">
+    <div className="antialiased text-black bg-white dark:bg-neutral-900 dark:text-white">
       <AuthContextProvider>
         <Navbar />
         <Component {...pageProps} />

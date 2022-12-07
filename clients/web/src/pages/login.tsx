@@ -1,7 +1,7 @@
 import { useAuth } from "../hooks/auth";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { validatePassword } from "../utils/dtos/validators/helpers";
+import { validatePassword } from "../utils/validators/helpers";
 
 export default function Login() {
   const router = useRouter();
@@ -11,7 +11,7 @@ export default function Login() {
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
   useEffect(() => {
-    if (user.username) router.push("/");
+    if (user?.username) router.push("/");
   }, [user]);
 
   useEffect(() => {

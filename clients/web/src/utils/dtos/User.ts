@@ -1,15 +1,23 @@
-export class UserCreateDTO {
+export type UserCreateDTO = {
   username: string;
   email: string;
   password: string;
   birthdate: string;
   bio: string;
   realname: string;
-}
+};
 
-export class UserDTO {
+export type UserDTO = {
+  userId: string;
   username: string;
-  realName: string;
-  profilePictureUrl: string;
-  bio: string;
-}
+  email: string;
+  birthdate: string;
+  bio?: string;
+  realName?: string;
+  profilePictureUrl?: string;
+  defaultTopArtistsRange: string;
+  defaultTopAlbumsRange: string;
+  defaultTopSongsRange: string;
+  createdAt: Date;
+  updatedAt: Date;
+};

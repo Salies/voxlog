@@ -6,7 +6,7 @@ import UserImage from "../userImage";
 const Navbar = () => {
   return (
     <>
-      <nav className="sticky top-0 z-50 w-full text-white bg-gradient-to-r from-neutral-900 to-neutral-800 opacity-90 hover:opacity-100">
+      <nav className="sticky top-0 z-50 w-full text-white opacity-100 bg-gradient-to-r from-neutral-900 to-neutral-800">
         <div className="container py-3 mx-auto">
           <div className="items-center justify-between text-center md:flex">
             <Link href="/">
@@ -32,7 +32,6 @@ const NavItems = () => {
     ["albums", "/albums"],
     ["artists", "/artists"],
     ["events", "/events"],
-    ["members", "/members"],
   ];
   return (
     <>
@@ -60,17 +59,18 @@ const Item = ({ name, href }: ItemProps) => {
 
 const Account = () => {
   const { user } = useAuth();
-  const { username, realName, profilePictureUrl } = user;
   return (
-    <Link href={user.username ? `/users/${username}` : "/login"}>
+    <Link href={user?.username ? `/users/${user?.username}` : "/login"}>
       <div className="flex items-center justify-center mt-2 md:mt-0">
-        {/* <UserImage
-          profilePictureUrl={profilePictureUrl}
-          name={username}
-          sizeInPixels={32}
-        /> */}
-        <h1 className="mx-4 font-bold text-md">
-          {realName?.split(" ")[0] || username || "login"}
+        {user?.profilePictureUrl && (
+          <UserImage
+            profilePictureUrl={user?.profilePictureUrl}
+            name={user?.username}
+            sizeInPixels={32}
+          />
+        )}
+        <h1 className="ml-2 font-bold text-md">
+          {user?.realName?.split(" ")[0] || user?.username || "login"}
         </h1>
       </div>
     </Link>

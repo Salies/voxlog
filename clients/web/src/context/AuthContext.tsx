@@ -5,17 +5,12 @@ import React from "react";
 import { setCookie, parseCookies, destroyCookie } from "nookies";
 import api from "../lib/axios";
 import Router from "next/router";
-
-interface UserProps {
-  username: string;
-  profilePictureUrl?: string;
-  bio?: string;
-  realName?: string;
-  createdAt: string;
-}
+import { parse, stringify } from "superjson";
+import { UserDTO } from "../utils/dtos/User";
+import { DateTime } from "luxon";
 
 interface AuthContextProps {
-  user: UserProps | null;
+  user: UserDTO | null;
   signIn: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
@@ -25,15 +20,32 @@ export const AuthContext = createContext({} as AuthContextProps);
 
 export const AuthContextProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState({} as UserProps | null);
+  const [user, setUser] = useState({} as UserDTO | null);
   const [error, setError] = useState(null);
   const [token, setToken] = useState(null);
 
   useEffect(() => {
+    const { "jwt.lastLogin": lastLogin } = parseCookies();
+    if (lastLogin) {
+      const userLastLogin: DateTime = DateTime.fromJSDate(parse(lastLogin));
+      const diffInDays = userLastLogin.diffNow("days").days;
+      if (diffInDays > 30) {
+        logout();
+      }
+    } else {
+      logout();
+    }
+
     const { "jwt.token": token } = parseCookies();
+    const userData = localStorage.getItem("user");
+
     if (token) {
       setToken(token);
     }
+    if (userData) {
+      setUser(parse(userData) as UserDTO);
+    }
+
     setLoading(false);
   }, []);
 
@@ -45,40 +57,33 @@ export const AuthContextProvider = ({ children }) => {
       });
       const { token } = response.data;
       setCookie(undefined, "jwt.token", token, {
-        maxAge: 60 * 60 * 1, // 1 hour
+        maxAge: 60 * 60 * 24 * 30,
       });
       setToken(token);
+      getUser();
     } catch (error) {
-      console.log(error);
       setError(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const logout = async () => {
-    destroyCookie(undefined, "jwt.token");
-    setToken(null);
-    setUser(null);
-  };
-
-  useEffect(() => {
+  const getUser = async () => {
     if (token) {
       api.defaults.headers["Authorization"] = `Bearer ${token}`;
       setLoading(true);
       api
         .get("/users/current")
         .then((response) => {
-          const { username, profilePictureUrl, bio, realName, createdAt } =
-            response.data;
-          setUser({
-            username,
-            profilePictureUrl,
-            bio,
-            realName,
-            createdAt,
+          const user: UserDTO = parse(response.data) as UserDTO;
+          setUser(user);
+          localStorage.setItem("user", stringify(user));
+          // store the time the user logged in
+          setCookie(undefined, "jwt.lastLogin", stringify(Date.now()), {
+            maxAge: 60 * 60 * 24 * 30,
           });
         })
+
         .catch((error) => {
           setError(error);
         })
@@ -86,11 +91,20 @@ export const AuthContextProvider = ({ children }) => {
           setLoading(false);
         });
     }
-  }, [token]);
+  };
+
+  const logout = async () => {
+    destroyCookie(undefined, "jwt.token");
+    destroyCookie(undefined, "jwt.lastLogin");
+    localStorage.removeItem("user");
+    setToken(null);
+    setUser(null);
+  };
 
   useEffect(() => {
     if (error) {
       Router.push("/404");
+      logout();
     }
   }, [error]);
 

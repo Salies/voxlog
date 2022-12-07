@@ -1,9 +1,9 @@
 import React from "react";
+import { parse } from "superjson";
 import ProfileHeader from "../../components/profileHeader";
 import ProfileStats from "../../components/profileStats";
 import ListeningReportMenu from "../../components/listeningReportMenu";
 import RecentEventsMenu from "../../components/recentEventsMenu";
-import Navbar from "../../components/navbar";
 import api from "../../lib/axios";
 import { NextPageContext } from "next";
 import { UserDTO } from "../../utils/dtos/User";
@@ -35,7 +35,7 @@ export async function getServerSideProps(context: NextPageContext) {
   try {
     const { username } = context.query;
     const { data } = await api.get(`/users/${username}`);
-    const user: UserDTO = data;
+    const user: UserDTO = parse(data);
 
     if (!user) throw new Error("User not found");
     return {
