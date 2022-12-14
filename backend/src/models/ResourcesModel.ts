@@ -7,10 +7,31 @@ import {
 } from '@prisma/client';
 import { Song, Artist, Album } from '../utils/dtos/Resources';
 
-const prisma = new PrismaClient();
+import { prisma } from '../lib/prisma';
 const sql = Prisma.sql;
 
 export default class ResourcesModel {
+  async searchSongByName(songName: string): Promise<any | null> {
+    const spacedSongName = songName.replace(' ', ' & ');
+    const songs: PSong[] = await prisma.song.findMany({
+      where: {
+        songTitle: {
+          search: spacedSongName,
+        },
+      },
+      include: {
+        inAlbum: {
+          include: {
+            fromArtist: true,
+          },
+        },
+      },
+    });
+
+    if (!songs) return null;
+    return songs;
+  }
+
   async getSongById(songId: string): Promise<Song | null> {
     const songData = await prisma.$queryRaw(sql`
       SELECT "Song"."songId", "Song"."title", "Song"."coverArtUrl", "Song"."durationInSeconds", "Song"."albumId", \

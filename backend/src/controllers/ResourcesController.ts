@@ -44,5 +44,15 @@ export default class ResourcesController {
     }
   }
 
-  // async get
+  async searchSongByName(req: Request, res: Response) {
+    const { songName } = req.query;
+    try {
+      const songs = await resourcesModel.searchSongByName(songName as string);
+      const stringifiedSongs = stringify(songs);
+      return res.status(200).json(stringifiedSongs);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
 }
