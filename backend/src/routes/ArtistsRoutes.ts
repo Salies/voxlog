@@ -1,9 +1,7 @@
 import { Router } from 'express';
-import ResourcesController from '../controllers/ResourcesController';
+import * as Resources from '../entities/resources';
 
-const resourcesController = new ResourcesController();
 const routes = Router();
-
-routes.get('/:artistId', resourcesController.getArtistById);
+routes.get('/:artistId', Resources.getArtistById);
 
 export default routes;

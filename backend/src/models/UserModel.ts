@@ -33,6 +33,7 @@ export default class UserModel {
       throw error;
     }
   }
+
   async create(userData: UserCreateIn): Promise<UserOut> {
     const birthDate = DateTime.fromISO(userData.birthDate).toISODate();
     const hashedPassword = await hashPassword(userData.password);

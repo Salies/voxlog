@@ -1,10 +1,9 @@
 import { Router } from 'express';
-import ResourcesController from '../controllers/ResourcesController';
+import * as Tracks from '../entities/tracks/handler';
 
-const resourcesController = new ResourcesController();
 const routes = Router();
 
-routes.get('/:songId', resourcesController.getSongById);
-// recieve a song name as a query parameter
-routes.get('/search', resourcesController.searchSongByName);
+routes.get('/:trackId', Tracks.getTrackById);
+routes.get('/search', Tracks.searchTrackByName);
+routes.get('/popular', Tracks.getPopularTracks);
 export default routes;
