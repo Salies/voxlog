@@ -1,8 +1,8 @@
 import { DateTime } from 'luxon';
 import { generateToken, invalidateToken } from '../../utils/auth';
-import { UserCreateIn, UserLoginIn } from '../../utils/dtos/User';
 import { compareHash, hashPassword } from '../../utils/helpers';
 import * as authRepository from './repository';
+import { UserCreateIn, UserLoginIn } from './dtos';
 
 export async function validateLogin(user: UserLoginIn): Promise<{ token: string } | null> {
   try {
@@ -31,12 +31,10 @@ export async function logout(username: string): Promise<void> {
 }
 
 export async function create(user: UserCreateIn) {
-  const birthDate = DateTime.fromISO(user.birthDate).toISODate();
   const hashedPassword = hashPassword(user.password);
 
   const userData = {
     ...user,
-    birthDate,
     password: hashedPassword,
   };
 

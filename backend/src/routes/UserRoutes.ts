@@ -10,7 +10,6 @@ const userRoutes = Router({ mergeParams: true });
 // users/
 routes.post('/auth', validateBody(UserLoginIn), User.login);
 routes.delete('/auth', jwtMiddleware, User.logout);
-
 routes.post('/', validateBody(UserCreateIn), User.create);
 routes.get('/current', jwtMiddleware, User.getCurrent);
 routes.use('/:username', userRoutes);

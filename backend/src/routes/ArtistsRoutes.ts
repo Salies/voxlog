@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import * as Resources from '../entities/resources';
+import * as Artist from '../entities/artists/handler';
 
 const routes = Router();
-routes.get('/:artistId', Resources.getArtistById);
+routes.get('/:artistId', Artist.getById);
 
 export default routes;

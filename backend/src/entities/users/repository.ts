@@ -1,6 +1,5 @@
-import { DateTime } from 'luxon';
-import { UserOut } from '../../utils/dtos/User';
 import { prisma, sql } from '../../utils/prisma';
+import { UserCreateIn, UserOut } from './dtos';
 
 export async function getPassword(username: string): Promise<string> {
   try {
@@ -14,13 +13,14 @@ export async function getPassword(username: string): Promise<string> {
   }
 }
 
-export async function create(user): Promise<UserOut> {
+export async function create(user: UserCreateIn): Promise<UserOut | null> {
   try {
-    const createdUser = await prisma.$executeRaw<UserOut>(
+    const affectedRows = await prisma.$executeRaw(
       sql`INSERT INTO "User" ("username", "email", "password", "birthDate", "bio", "realName") VALUES (${user.username}, ${user.email}, ${user.password}, ${user.birthDate}, ${user.bio}, ${user.realName}) RETURNING "username", "email", "birthDate", "bio", "realName", "profilePictureUrl", "defaultTopArtistsRange", "defaultTopAlbumsRange", "defaultTopSongsRange", "createdAt", "updatedAt"`,
     );
 
-    return createdUser[0];
+    if (!affectedRows) return null;
+    return getByUsername(user.username);
   } catch (error) {
     throw error;
   }
@@ -44,5 +44,41 @@ export async function getListeningStats(username: string): Promise<any> {
 }
 
 export async function getRecentScrobbles(username: string, quantity: number): Promise<any> {
-  return;
+  try {
+    const songsInMostRecentOrder: any[] = await prisma.$queryRaw(sql`
+    SELECT "Song"."songId" as "songId", "Song"."title" as "songTitle", "Song"."coverArtUrl" as "coverArtUrl", \
+    "Album"."coverArtUrl" AS "albumCoverArtUrl", \
+    "Artist"."artistId" as "artistId", "Artist"."name" AS "artistName", \
+    "Scrobble"."createdAt" as "scrobbleCreatedAt" \
+    FROM "Scrobble" \
+    INNER JOIN "Song" ON "Scrobble"."songId" = "Song"."songId" \
+    INNER JOIN "Album" ON "Song"."albumId" = "Album"."albumId" \
+    INNER JOIN "Artist" ON "Album"."artistId" = "Artist"."artistId" \
+    WHERE "Scrobble"."userId" = (SELECT "userId" FROM "User" WHERE "username" = ${username} LIMIT 1) \
+    ORDER BY "Scrobble"."createdAt" DESC \
+    LIMIT ${quantity}
+  `);
+
+    const songs = songsInMostRecentOrder.map((song) => {
+      return {
+        scrobbleCreatedAt: song.scrobbleCreatedAt,
+        song: {
+          songId: song.songId,
+          songTitle: song.songTitle,
+          coverArtUrl: song.coverArtUrl,
+        },
+        album: {
+          coverArtUrl: song.albumCoverArtUrl,
+        },
+        artist: {
+          artistId: song.artistId,
+          name: song.artistName,
+        },
+      };
+    });
+
+    return songs;
+  } catch (error) {
+    throw error;
+  }
 }

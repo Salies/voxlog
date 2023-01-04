@@ -1,15 +1,12 @@
-import { plainToInstance } from 'class-transformer';
 import { Request, Response } from 'express';
-import UserModel from '../../models/UserModel';
-import { UserCreateIn, UserLoginIn } from '../../utils/dtos/User';
-import { compareHash } from '../../utils/helpers';
 import * as userService from './service';
-import { generateToken, invalidateToken } from '../../utils/auth';
 import { stringify } from 'superjson';
+import { UserCreateInSchema, UserLoginInSchema } from './dtos';
+import { z } from 'zod';
 
 export async function login(req: Request, res: Response) {
   try {
-    const userData = plainToInstance(UserLoginIn, req.body);
+    const userData = UserLoginInSchema.parse(req.body);
 
     const token = userService.validateLogin(userData);
 
@@ -24,7 +21,9 @@ export async function login(req: Request, res: Response) {
 
 export async function logout(req: Request, res: Response) {
   try {
-    await userService.logout(req.app.locals.username);
+    const username = z.string().parse(req.app.locals.username);
+
+    await userService.logout(username);
     res.status(200).json({ message: 'Logout successful' });
   } catch (error) {
     console.log(error);
@@ -34,9 +33,9 @@ export async function logout(req: Request, res: Response) {
 
 export async function create(req: Request, res: Response) {
   try {
-    const user: UserCreateIn = req.body;
+    const userData = UserCreateInSchema.parse(req.body);
 
-    const createdUser = await userService.create(user);
+    const createdUser = await userService.create(userData);
 
     if (createdUser) {
       return res.status(201).json(stringify(createdUser));
@@ -51,9 +50,10 @@ export async function create(req: Request, res: Response) {
 
 export async function get(req: Request, res: Response) {
   try {
-    const { username } = req.params;
+    const username = z.string().parse(req.params.username);
 
     const user = await userService.get(username);
+
     if (user) {
       return res.status(200).json(stringify(user));
     } else {
@@ -67,7 +67,7 @@ export async function get(req: Request, res: Response) {
 
 export async function getCurrent(req: Request, res: Response) {
   try {
-    const username = req.app.locals.username;
+    const username = z.string().parse(req.app.locals.username);
 
     const user = await userService.get(username);
     if (user) {
@@ -83,7 +83,7 @@ export async function getCurrent(req: Request, res: Response) {
 
 export async function getStats(req: Request, res: Response) {
   try {
-    const { username } = req.params;
+    const username = z.string().parse(req.params.username);
 
     const stats = await userService.getListeningStats(username);
 
@@ -96,8 +96,8 @@ export async function getStats(req: Request, res: Response) {
 
 export async function getRecentScrobbles(req: Request, res: Response) {
   try {
-    const { username } = req.params;
-    const quantity = parseInt(req.query.range as string, 10) || 10;
+    const username = z.string().parse(req.params.username);
+    const quantity = z.number().optional().parse(req.query.range) || 10;
 
     const recentScrobbles = await userService.getRecentScrobbles(username, quantity);
 

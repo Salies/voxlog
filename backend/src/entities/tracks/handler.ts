@@ -1,52 +1,53 @@
 import { Request, Response } from 'express';
-import ResourcesModel from '../../models/ResourcesModel';
-import { stringify } from 'superjson';
 import * as tracksService from './service';
+import { stringify } from 'superjson';
+import { z } from 'zod';
 
-const resourcesModel = new ResourcesModel();
-
-export async function getTrackById(req: Request, res: Response) {
+export async function getById(req: Request, res: Response) {
   try {
-    const { songId } = req.params;
-    const song = await resourcesModel.getTrackById(songId);
-    const stringifiedTrack = stringify(song);
-    return res.status(200).json(stringifiedTrack);
+    const trackId = z.string().parse(req.params.trackId);
+
+    const track = await tracksService.getById(trackId);
+
+    if (track) {
+      return res.status(200).json(stringify(track));
+    } else {
+      return res.status(404).json({ error: 'Track not found' });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
 
-export async function getAlbumById(req: Request, res: Response) {
+export async function searchByName(req: Request, res: Response) {
+  const trackName = z.string().parse(req.query.trackName);
+
   try {
-    const { albumId } = req.params;
-    const album = await resourcesModel.getAlbumById(albumId);
-    console.log('album', album);
-    const stringifiedAlbum = stringify(album);
-    return res.status(200).json(stringifiedAlbum);
+    const tracks = await tracksService.searchByName(trackName as string);
+
+    if (tracks.length > 0) {
+      return res.status(200).json(stringify(tracks));
+    } else {
+      return res.status(404).json({ error: 'No tracks found' });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
 
-export async function searchTrackByName(req: Request, res: Response) {
-  const { songName } = req.query;
+export async function getPopular(req: Request, res: Response) {
   try {
-    const tracks = await resourcesModel.searchTrackByName(songName as string);
-    const stringifiedTracks = stringify(tracks);
-    return res.status(200).json(stringifiedTracks);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-}
+    const quantity = z.number().optional().parse(req.query.range) || 10;
 
-export async function getPopularTracks(req: Request, res: Response) {
-  try {
-    const { numberOfTracks } = req.params;
-    const popularTracks = await tracksService.popularTracks(numberOfTracks);
-    return res.status(200).json(popularTracks);
+    const popularTracks = await tracksService.getPopular(quantity);
+
+    if (popularTracks.length > 0) {
+      return res.status(200).json(stringify(popularTracks));
+    } else {
+      return res.status(404).json({ error: 'No tracks found' });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal server error' });

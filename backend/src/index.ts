@@ -24,10 +24,10 @@ app.use((req, res, next) => {
 
 app.use('/api', scrobbleRoutes);
 
-app.use('/users', userRoutes);
+app.use('/user', userRoutes);
 
-app.use('/tracks', trackRoutes);
-app.use('/albums', albumRoutes);
-app.use('/artists', artistRoutes);
+app.use('/track', trackRoutes);
+app.use('/album', albumRoutes);
+app.use('/artist', artistRoutes);
 
 app.listen(8000);
