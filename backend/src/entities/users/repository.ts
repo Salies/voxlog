@@ -82,3 +82,7 @@ export async function getRecentScrobbles(username: string, quantity: number): Pr
     throw error;
   }
 }
+
+export async function searchByName(username: string): Promise<UserOut[]> {
+  return [];
+}

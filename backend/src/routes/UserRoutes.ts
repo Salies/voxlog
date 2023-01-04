@@ -12,6 +12,7 @@ routes.post('/auth', validateBody(UserLoginIn), User.login);
 routes.delete('/auth', jwtMiddleware, User.logout);
 routes.post('/', validateBody(UserCreateIn), User.create);
 routes.get('/current', jwtMiddleware, User.getCurrent);
+routes.get('/search', jwtMiddleware, User.searchByName);
 routes.use('/:username', userRoutes);
 
 // /users/:username

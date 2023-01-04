@@ -111,3 +111,19 @@ export async function getRecentScrobbles(req: Request, res: Response) {
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+export async function searchByName(req: Request, res: Response) {
+  const username = z.string().parse(req.query.username);
+  try {
+    const tracks = await userService.searchByName(username as string);
+
+    if (tracks.length > 0) {
+      return res.status(200).json(stringify(tracks));
+    } else {
+      return res.status(404).json({ error: 'No tracks found' });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
