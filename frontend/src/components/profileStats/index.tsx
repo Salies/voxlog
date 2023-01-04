@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import Link from "next/link";
-import { useEffect } from "react";
-import api from "../../lib/axios";
-import { parse } from "superjson";
-import { UserRecentTracksDTO } from "../../utils/dtos/User";
-import { DateTime, Interval } from "luxon";
-import Avatar from "react-avatar";
-import Image from "next/image";
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { useEffect } from 'react';
+import api from '../../lib/axios';
+import { parse } from 'superjson';
+import { UserRecentTracksDTO } from '../../utils/dtos/User';
+import { DateTime, Interval } from 'luxon';
+import Avatar from 'react-avatar';
+import Image from 'next/image';
 
 export default function ProfileStats(username: { username: string }) {
   return (
@@ -20,26 +20,14 @@ export default function ProfileStats(username: { username: string }) {
 
 const TopArtists = () => {
   const artists = [
+    ['Metallica', 'https://i.scdn.co/image/ab6761610000e5eb8101d13bdd630b0889acd2fd', '/artists/metallica'],
+    ['Hayley Williams', 'https://i.scdn.co/image/ab6761610000e5ebca3aa12c1b46ff911ad53104', '/artists/hayley-williams'],
     [
-      "Metallica",
-      "https://i.scdn.co/image/ab6761610000e5eb8101d13bdd630b0889acd2fd",
-      "/artists/metallica",
+      'Milton Nascimento',
+      'https://i.scdn.co/image/ab67706c0000da84bfff8bb61ae0e83a2878df1e',
+      '/artists/milton-nascimento',
     ],
-    [
-      "Hayley Williams",
-      "https://i.scdn.co/image/ab6761610000e5ebca3aa12c1b46ff911ad53104",
-      "/artists/hayley-williams",
-    ],
-    [
-      "Milton Nascimento",
-      "https://i.scdn.co/image/ab67706c0000da84bfff8bb61ae0e83a2878df1e",
-      "/artists/milton-nascimento",
-    ],
-    [
-      "Novos Baianos",
-      "https://i.scdn.co/image/ab6761610000e5eb6f2aa6bffd27b505bc2e5b8c",
-      "/artists/novos-baianos",
-    ],
+    ['Novos Baianos', 'https://i.scdn.co/image/ab6761610000e5eb6f2aa6bffd27b505bc2e5b8c', '/artists/novos-baianos'],
   ];
 
   return <ListingView title="Top Artists" items={artists} />;
@@ -47,24 +35,24 @@ const TopArtists = () => {
 const TopAlbums = () => {
   const albums = [
     [
-      "Metallica - Master of Puppets",
-      "https://i.scdn.co/image/ab67616d0000b273668e3aca3167e6e569a9aa20",
-      "/albums/xyz",
+      'Metallica - Master of Puppets',
+      'https://i.scdn.co/image/ab67616d0000b273668e3aca3167e6e569a9aa20',
+      '/albums/xyz',
     ],
     [
-      "Hayley Williams - Petals for Armor",
-      "https://i.scdn.co/image/ab67616d0000b273896e2483613a566bcb00d324",
-      "/albums/xyz",
+      'Hayley Williams - Petals for Armor',
+      'https://i.scdn.co/image/ab67616d0000b273896e2483613a566bcb00d324',
+      '/albums/xyz',
     ],
     [
-      "Milton Nascimento - Clube da Esquina",
-      "https://i.scdn.co/image/ab67616d0000b273bfbfbf3201ecd4d56ac3c155",
-      "/albums/xyz",
+      'Milton Nascimento - Clube da Esquina',
+      'https://i.scdn.co/image/ab67616d0000b273bfbfbf3201ecd4d56ac3c155',
+      '/albums/xyz',
     ],
     [
-      "Novos Baianos - Acabou Chorare",
-      "https://i.scdn.co/image/ab67616d0000b27327968fcceb7e9541fb2c9d76",
-      "/albums/xyz",
+      'Novos Baianos - Acabou Chorare',
+      'https://i.scdn.co/image/ab67616d0000b27327968fcceb7e9541fb2c9d76',
+      '/albums/xyz',
     ],
   ];
 
@@ -82,8 +70,7 @@ const ListingView = ({ title, items }: ListingViewProps) => {
         <h1 className="text-3xl font-bold text-center md:text-left">{title}</h1>
         <Link
           href="#"
-          className="text-xs font-semibold text-neutral-500 hover:text-black dark:text-neutral-400 hover:dark:text-white"
-        >
+          className="text-xs font-semibold text-neutral-500 hover:text-black dark:text-neutral-400 hover:dark:text-white">
           <h6 className="text-sm font-thin">All Time ⭣</h6>
         </Link>
       </div>
@@ -126,27 +113,21 @@ const RecentTracks = ({ username }: { username: string }) => {
 
   useEffect(() => {
     const fetchItems = async () => {
-      const response = await api.get(`/users/${username}/recent-tracks`);
+      const url = `/users/${username}/recent-tracks`;
+      const response = await api.get(url);
       const scrobbles = parse(response.data) as UserRecentTracksDTO[];
       setScrobbles(scrobbles);
     };
     fetchItems();
-  }, []);
+  }, [username]);
 
   return (
     <section className="flex flex-col justify-between w-full">
-      <h1 className="text-3xl font-bold text-center md:text-left">
-        Recent Tracks
-      </h1>
+      <h1 className="text-3xl font-bold text-center md:text-left">Recent Tracks</h1>
       <div className="mx-1">
         {scrobbles.map((scrobble) => {
           counter++;
-          return (
-            <ScrobbleInstance
-              key={counter}
-              scrobble={scrobble}
-            ></ScrobbleInstance>
-          );
+          return <ScrobbleInstance key={counter} scrobble={scrobble}></ScrobbleInstance>;
         })}
       </div>
     </section>
@@ -158,24 +139,24 @@ const ScrobbleInstance = ({ scrobble }: { scrobble: UserRecentTracksDTO }) => {
     const datetime: DateTime = DateTime.fromJSDate(date);
 
     const diff = Interval.fromDateTimes(datetime, DateTime.local()).toDuration([
-      "years",
-      "months",
-      "days",
-      "hours",
-      "minutes",
+      'years',
+      'months',
+      'days',
+      'hours',
+      'minutes',
     ]);
 
-    if (datetime.hasSame(DateTime.local(), "day")) {
-      return datetime.toFormat("HH:mm");
+    if (datetime.hasSame(DateTime.local(), 'day')) {
+      return datetime.toFormat('HH:mm');
       // if same week, show day of week
-    } else if (datetime.hasSame(DateTime.local(), "week")) {
-      return datetime.toFormat("ccc");
+    } else if (datetime.hasSame(DateTime.local(), 'week')) {
+      return datetime.toFormat('ccc');
       // if same year, show month and day
-    } else if (datetime.hasSame(DateTime.local(), "year")) {
-      return datetime.toFormat("MMM dd");
+    } else if (datetime.hasSame(DateTime.local(), 'year')) {
+      return datetime.toFormat('MMM dd');
       // else show full date
     } else {
-      return datetime.toFormat("MMM dd yyyy");
+      return datetime.toFormat('MMM dd yyyy');
     }
   }
 
@@ -199,17 +180,13 @@ const ScrobbleInstance = ({ scrobble }: { scrobble: UserRecentTracksDTO }) => {
         )}
         <div className="flex flex-col text-center ">
           <Link href={`/songs/${scrobble.song.songId}`}>
-            <span className="font-semibold text-md">
-              {scrobble.song.songTitle}
-            </span>
+            <span className="font-semibold text-md">{scrobble.song.songTitle}</span>
           </Link>
           <Link href={`/artists/${scrobble.artist.artistId}`}>
             <span className="text-sm font-thin">{scrobble.artist.name}</span>
           </Link>
         </div>
-        <span className="hidden text-xs font-semibold md:block">
-          {formatDate(scrobble.scrobbleCreatedAt)}
-        </span>
+        <span className="hidden text-xs font-semibold md:block">{formatDate(scrobble.scrobbleCreatedAt)}</span>
         <span className="block text-xs font-semibold md:hidden"></span>
       </div>
     </div>

@@ -1,14 +1,14 @@
-import React from "react";
-import { parse } from "superjson";
-import ProfileHeader from "../../components/profileHeader";
-import ProfileStats from "../../components/profileStats";
-import ListeningReportMenu from "../../components/listeningReportMenu";
-import RecentEventsMenu from "../../components/recentEventsMenu";
-import api from "../../lib/axios";
-import { NextPageContext } from "next";
-import { UserDTO } from "../../utils/dtos/User";
+import React from 'react';
+import { parse } from 'superjson';
+import ProfileHeader from '../../components/profileHeader';
+import ProfileStats from '../../components/profileStats';
+import ListeningReportMenu from '../../components/listeningReportMenu';
+import RecentEventsMenu from '../../components/recentEventsMenu';
+import api from '../../lib/axios';
+import { NextPageContext } from 'next';
+import { UserDTO } from '../../utils/dtos/User';
 
-export default ({ user }: { user: UserDTO }) => {
+export default function UserProfile({ user }: { user: UserDTO }) {
   return (
     <>
       <section className="md:w-full">
@@ -29,7 +29,7 @@ export default ({ user }: { user: UserDTO }) => {
       </section>
     </>
   );
-};
+}
 
 export async function getServerSideProps(context: NextPageContext) {
   try {
@@ -37,7 +37,7 @@ export async function getServerSideProps(context: NextPageContext) {
     const { data } = await api.get(`/users/${username}`);
     const user: UserDTO = parse(data);
 
-    if (!user) throw new Error("User not found");
+    if (!user) throw new Error('User not found');
     return {
       props: {
         user,
@@ -47,7 +47,7 @@ export async function getServerSideProps(context: NextPageContext) {
     console.log(error);
     return {
       redirect: {
-        destination: "/404",
+        destination: '/404',
         permanent: false,
       },
     };
