@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useEffect } from 'react';
 import api from '../../lib/axios';
-import { parse } from 'superjson';
+
 import { UserRecentTracksDTO } from '../../utils/dtos/User';
 import { DateTime, Interval } from 'luxon';
 import Avatar from 'react-avatar';
@@ -115,7 +115,7 @@ const RecentTracks = ({ username }: { username: string }) => {
     const fetchItems = async () => {
       const url = `/users/${username}/recent-tracks`;
       const response = await api.get(url);
-      const scrobbles = parse(response.data) as UserRecentTracksDTO[];
+      const scrobbles = response.data as UserRecentTracksDTO[];
       setScrobbles(scrobbles);
     };
     fetchItems();

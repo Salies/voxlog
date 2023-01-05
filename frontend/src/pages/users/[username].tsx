@@ -1,5 +1,5 @@
 import React from 'react';
-import { parse } from 'superjson';
+
 import ProfileHeader from '../../components/profileHeader';
 import ProfileStats from '../../components/profileStats';
 import ListeningReportMenu from '../../components/listeningReportMenu';
@@ -34,8 +34,7 @@ export default function UserProfile({ user }: { user: UserDTO }) {
 export async function getServerSideProps(context: NextPageContext) {
   try {
     const { username } = context.query;
-    const { data } = await api.get(`/users/${username}`);
-    const user: UserDTO = parse(data);
+    const { data: user }: { data: UserDTO } = await api.get(`/users/${username}`);
 
     if (!user) throw new Error('User not found');
     return {

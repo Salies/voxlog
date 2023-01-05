@@ -4,10 +4,14 @@ import { useEffect, useState } from 'react';
 import { validatePassword } from '../../utils/validators/helpers';
 import Image from 'next/image';
 import Link from 'next/link';
+import { SignUpForm, submitForm, validateFormData } from './helpers';
 
 export default function SingUp() {
   const router = useRouter();
   const { user, signIn, loading } = useAuth();
+  if (user?.username) router.push('/');
+
+  const [error, setError] = useState<string | null>(null);
 
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -17,37 +21,48 @@ export default function SingUp() {
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
 
-  const formData = {
+  const formData: SignUpForm = {
     username,
     email,
-    password,
+    birthDate,
     bio,
     realName,
-    birthDate,
+    password,
+    passwordConfirmation,
   };
 
-  useEffect(() => {
-    if (user?.username) router.push('/');
-  }, [user, router]);
+  const buttonDisabled = !validateFormData(formData);
 
-  const validateFormData = (form: typeof formData, passwordConfirmation: string): boolean => {
-    const { username, email, password, bio, realName, birthDate } = form;
-
-    if (!username || !email || !password || !birthDate) return false;
-
-    if (!validatePassword(password)) return false;
-
-    if (password !== passwordConfirmation) return false;
-
-    return true;
-  };
-
-  const buttonDisabled = !validateFormData(formData, passwordConfirmation);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    signIn(username, password);
-  };
+    try {
+      await submitForm(formData);
+      await signIn(username, password);
+    } catch (error: unknown) {
+      const response = error as Response;
+      if (response.status === 400) setError('Dados inválidos');
+      else setError('Erro desconhecido');
+    }
+  }
+
+  if (error)
+    return (
+      // center error message
+      <div className="flex items-center justify-center w-full h-screen bg-center bg-cover bg-opacity-30 bg-drums-bg">
+        <div className="absolute w-full h-full bg-black opacity-70 " />
+        <div className="z-10 w-full max-w-sm mx-auto rounded-xl ">
+          <div className="px-10 py-4 bg-white rounded-xl dark:bg-neutral-900">
+            <h1 className="mb-5 text-lg font-bold text-black dark:text-white">Erro</h1>
+            <p className="text-red-500">{error}</p>
+            <Link href="/signin">
+              <span className="block mt-5 text-sm font-bold text-center text-blue-500 dark:text-blue-400 hover:underline">
+                Voltar para login
+              </span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-screen bg-center bg-cover bg-opacity-30 bg-drums-bg">
@@ -59,7 +74,7 @@ export default function SingUp() {
             label="Nome de usuário*"
             type="text"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
             placeholder="seu nome de usuário"
             maxLength={16}
             minLength={3}
@@ -69,7 +84,7 @@ export default function SingUp() {
             label="Endereço de e-mail*"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
             placeholder="seu e-mail principal"
             maxLength={100}
             minLength={3}
@@ -79,7 +94,7 @@ export default function SingUp() {
             label="Senha*"
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
             placeholder="uma senha segura"
             maxLength={100}
             minLength={8}
@@ -89,7 +104,7 @@ export default function SingUp() {
             label="Confirme sua senha*"
             type="password"
             value={passwordConfirmation}
-            onChange={(e) => setPasswordConfirmation(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPasswordConfirmation(e.target.value)}
             placeholder="confirme sua senha"
             maxLength={100}
             minLength={8}
@@ -100,7 +115,7 @@ export default function SingUp() {
             label="Data de nascimento*"
             type="date"
             value={birthDate}
-            onChange={(e) => setBirthDate(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBirthDate(e.target.value)}
             placeholder="sua data de nascimento"
             maxLength={10}
             minLength={10}
@@ -110,7 +125,7 @@ export default function SingUp() {
             label="Nome completo"
             type="text"
             value={realName}
-            onChange={(e) => setRealName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRealName(e.target.value)}
             placeholder="seu nome completo"
             maxLength={100}
             minLength={3}
@@ -120,7 +135,7 @@ export default function SingUp() {
             label="Bio"
             type="text"
             value={bio}
-            onChange={(e) => setBio(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBio(e.target.value)}
             placeholder="uma breve descrição sobre você"
             maxLength={100}
             minLength={3}
@@ -147,7 +162,18 @@ export default function SingUp() {
   );
 }
 
-const Input = ({ label, type, value, onChange, placeholder, maxLength, minLength, required }) => {
+type InputProps = {
+  label: string;
+  type: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder: string;
+  maxLength: number;
+  minLength: number;
+  required: boolean;
+};
+
+const Input = ({ label, type, value, onChange, placeholder, maxLength, minLength, required }: InputProps) => {
   return (
     <div className="mb-4">
       <label className="block mb-2 text-sm font-bold text-neutral-700 dark:text-neutral-200" htmlFor={label}>

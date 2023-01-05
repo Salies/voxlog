@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import * as trackService from './service';
-import { stringify } from 'superjson';
 import { z } from 'zod';
 
 export async function getById(req: Request, res: Response) {
@@ -10,7 +9,7 @@ export async function getById(req: Request, res: Response) {
     const track = await trackService.getById(trackId);
 
     if (track) {
-      return res.status(200).json(stringify(track));
+      return res.status(200).json(track);
     } else {
       return res.status(404).json({ error: 'Track not found' });
     }
@@ -27,7 +26,7 @@ export async function searchByName(req: Request, res: Response) {
     const tracks = await trackService.searchByName(trackName as string);
 
     if (tracks.length > 0) {
-      return res.status(200).json(stringify(tracks));
+      return res.status(200).json(tracks);
     } else {
       return res.status(404).json({ error: 'No tracks found' });
     }
@@ -44,7 +43,7 @@ export async function getPopular(req: Request, res: Response) {
     const popularTracks = await trackService.getPopular(quantity);
 
     if (popularTracks.length > 0) {
-      return res.status(200).json(stringify(popularTracks));
+      return res.status(200).json(popularTracks);
     } else {
       return res.status(404).json({ error: 'No tracks found' });
     }

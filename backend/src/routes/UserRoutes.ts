@@ -1,18 +1,18 @@
 import { Router } from 'express';
-import jwtMiddleware from '../middlewares/jwtMiddleware';
-import { validateBody } from '../middlewares/validationMiddleware';
-import { UserCreateIn, UserLoginIn } from '../utils/dtos/User';
 import * as User from '../entities/users/handler';
+import { UserCreateInSchema, UserLoginInSchema } from '../entities/users/dtos';
+import { validateBody } from '../middlewares/dto';
+import auth from '../middlewares/auth';
 
 const routes = Router();
 const userRoutes = Router({ mergeParams: true });
 
 // users/
-routes.post('/auth', validateBody(UserLoginIn), User.login);
-routes.delete('/auth', jwtMiddleware, User.logout);
-routes.post('/', validateBody(UserCreateIn), User.create);
-routes.get('/current', jwtMiddleware, User.getCurrent);
-routes.get('/search', jwtMiddleware, User.searchByName);
+routes.post('/auth', validateBody(UserLoginInSchema), User.login);
+routes.delete('/auth', auth, User.logout);
+routes.post('/', validateBody(UserCreateInSchema), User.create);
+routes.get('/current', auth, User.getCurrent);
+routes.get('/search', auth, User.searchByName);
 routes.use('/:username', userRoutes);
 
 // /users/:username

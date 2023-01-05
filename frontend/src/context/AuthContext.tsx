@@ -4,14 +4,12 @@ import React from 'react';
 // store token in a secure cookie
 import { setCookie, parseCookies, destroyCookie } from 'nookies';
 import api from '../lib/axios';
-import Router, { useRouter } from 'next/router';
-import { parse, stringify } from 'superjson';
 import { UserDTO } from '../utils/dtos/User';
 import { DateTime } from 'luxon';
 
 interface AuthContextProps {
   user: UserDTO | null;
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
 }
@@ -21,14 +19,13 @@ export const AuthContext = createContext({} as AuthContextProps);
 export const AuthContextProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState({} as UserDTO | null);
-  const [error, setError] = useState();
-  const [token, setToken] = useState<string>();
+  const [error, setError] = useState<unknown | null>(null);
+  const [token, setToken] = useState<string>('');
 
   useEffect(() => {
     const { 'jwt.lastLogin': lastLogin } = parseCookies();
     if (lastLogin) {
-      const parsedLastLogin = parse(lastLogin);
-      const userLastLogin: DateTime = DateTime.fromJSDate(parsedLastLogin);
+      const userLastLogin: DateTime = DateTime.fromISO(lastLogin);
       const diffInDays = userLastLogin.diffNow('days').days;
       if (diffInDays > 30) logout();
     } else {
@@ -40,7 +37,7 @@ export const AuthContextProvider = ({ children }: React.PropsWithChildren<{}>) =
 
     if (token) setToken(token);
 
-    if (userData) setUser(parse(userData) as UserDTO);
+    if (userData) setUser(JSON.parse(userData) as UserDTO);
 
     setLoading(false);
   }, []);
@@ -68,11 +65,11 @@ export const AuthContextProvider = ({ children }: React.PropsWithChildren<{}>) =
       api
         .get('/users/current')
         .then((response) => {
-          const user: UserDTO = parse(response.data) as UserDTO;
+          const user: UserDTO = response.data as UserDTO;
           setUser(user);
-          localStorage.setItem('user', stringify(user));
-          // store the time the user logged in
-          setCookie(undefined, 'jwt.lastLogin', stringify(Date.now()), {
+          localStorage.setItem('user', JSON.stringify(user));
+
+          setCookie(undefined, 'jwt.lastLogin', JSON.stringify(DateTime.now()), {
             maxAge: 60 * 60 * 24 * 30,
           });
         })
@@ -90,7 +87,7 @@ export const AuthContextProvider = ({ children }: React.PropsWithChildren<{}>) =
     destroyCookie(undefined, 'jwt.token');
     destroyCookie(undefined, 'jwt.lastLogin');
     localStorage.removeItem('user');
-    setToken(null);
+    setToken('');
     setUser(null);
   };
 

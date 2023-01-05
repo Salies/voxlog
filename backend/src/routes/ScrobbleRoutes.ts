@@ -1,9 +1,8 @@
 import { Router } from 'express';
-import jwtApiMiddleware from '../middlewares/jwtApiMiddleware';
-// import * as Scrobble from '../entities/scrobbles';
+import authApi from '../middlewares/authApi';
+import * as Scrobble from '../entities/scrobbles/handler';
 const routes = Router();
 
-// routes.post('/', jwtApiMiddleware, scrobbleController.create);
-// routes.post('/', scrobbleController.create);
-// routes.post('/login', scrobbleController.login);
+routes.post('/', authApi, Scrobble.create);
+
 export default routes;

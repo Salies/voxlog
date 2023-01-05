@@ -1,5 +1,4 @@
 import React from 'react';
-import { parse } from 'superjson';
 import api from '../../lib/axios';
 import { NextPageContext } from 'next';
 import { Album } from '../../utils/dtos/Resources';
@@ -10,13 +9,15 @@ export default function AlbumPage({ album }: { album: Album }) {
     <div className="w-full h-screen">
       <div className="items-center w-full mx-auto mt-8">
         <div className="">
-          <Image
-            src={album.coverArtUrl}
-            alt={album.title}
-            width={200}
-            height={200}
-            className="mx-auto rounded-md shadow-xl dark:shadow-none"
-          />
+          {album.coverArtUrl && (
+            <Image
+              src={album.coverArtUrl}
+              alt={album.title}
+              width={200}
+              height={200}
+              className="mx-auto rounded-md shadow-xl dark:shadow-none"
+            />
+          )}
           <div>
             <h1 className="mt-4 text-5xl font-extrabold text-center">{album.title}</h1>
             <h1 className="text-2xl font-semibold tracking-tight text-center">{album.fromArtist.name}</h1>
@@ -31,7 +32,7 @@ export async function getServerSideProps(context: NextPageContext) {
   try {
     const { songId } = context.query;
     const { data } = await api.get(`/albums/${songId}`);
-    const album = parse(data);
+    const album = JSON.parse(data);
     if (!album) throw new Error('Album not found');
     return {
       props: {

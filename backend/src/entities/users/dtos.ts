@@ -5,9 +5,10 @@ export const UserCreateInSchema = z.object({
   password: z
     .string()
     .min(8)
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/),
+    .regex(/^(?=.*[a-z])(?=.*[0-9])[a-zA-Z0-9]{8,}$/),
+
   email: z.string().email(),
-  birthDate: z.date(),
+  birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   bio: z.string().optional(),
   realName: z.string().optional(),
 });
@@ -17,7 +18,7 @@ export const UserLoginInSchema = z.object({
   password: z
     .string()
     .min(8)
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/),
+    .regex(/^(?=.*[a-z])(?=.*[0-9])[a-zA-Z0-9]{8,}$/),
 });
 
 export const UserOutSchema = z.object({

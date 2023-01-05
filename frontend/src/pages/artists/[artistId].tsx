@@ -1,5 +1,4 @@
 import React from 'react';
-import { parse } from 'superjson';
 import api from '../../lib/axios';
 import { NextPageContext } from 'next';
 import { Artist } from '../../utils/dtos/Resources';
@@ -24,8 +23,7 @@ export default function ArtistPage({ artist }: { artist: Artist }) {
 export async function getServerSideProps(context: NextPageContext) {
   try {
     const { artistId } = context.query;
-    const { data } = await api.get(`/artists/${artistId}`);
-    const artist = parse(data);
+    const { data: artist }: { data: Artist } = await api.get(`/artists/${artistId}`);
 
     if (!artist) throw new Error('Artist not found');
     return {
