@@ -1,26 +1,37 @@
+import { DateTime } from 'luxon';
 import { prisma, sql } from '../../utils/prisma';
+import { Prisma } from '@prisma/client';
 import { UserCreateIn, UserOut } from './dtos';
+import cuid from 'cuid';
 
 export async function getPassword(username: string): Promise<string> {
   try {
-    const password: any = await prisma.$queryRaw(
-      sql`SELECT "password" FROM "User" WHERE "username" = ${username} LIMIT 1`,
-    );
+
+    const password: any[] = await prisma.$queryRaw(sql`
+    SELECT "password" FROM "User" WHERE "username" = ${username} LIMIT 1
+  `);
 
     return password[0].password;
+
+
   } catch (error) {
     throw error;
   }
+
 }
 
 export async function create(user: UserCreateIn): Promise<UserOut | null> {
   try {
-    const affectedRows = await prisma.$executeRaw(
-      sql`INSERT INTO "User" ("username", "email", "password", "birthDate", "bio", "realName") VALUES (${user.username}, ${user.email}, ${user.password}, ${user.birthDate}, ${user.bio}, ${user.realName}) RETURNING "username", "email", "birthDate", "bio", "realName", "profilePictureUrl", "defaultTopArtistsRange", "defaultTopAlbumsRange", "defaultTopSongsRange", "createdAt", "updatedAt"`,
-    );
+    const birthDate = DateTime.fromFormat(user.birthDate, 'yyyy-MM-dd').toJSDate();
 
-    if (!affectedRows) return null;
+
+
+    const affectedRows: any = await prisma.$executeRaw(
+      sql`INSERT INTO "User" ("userId", "username", "email", "password", "birthDate", "bio", "realName") VALUES (${cuid()}, ${user.username}, ${user.email}, ${user.password}, ${birthDate}, ${user.bio}, ${user.realName});`);
+     
+    if (affectedRows < 1) return null;
     return getByUsername(user.username);
+    
   } catch (error) {
     throw error;
   }

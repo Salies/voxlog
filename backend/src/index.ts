@@ -11,15 +11,10 @@ const app = express();
 
 app.use(express.json());
 
-// CORS - enable cross-origin resource sharing\
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
-  }
-
   console.log('REQUEST', req.method, req.url, 'at ', DateTime.local().toISO());
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', '*');
   console.log('\nBody: ', req.body, 'Params: ', req.params, 'Query: ', req.query);
   next();
 });

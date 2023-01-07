@@ -4,14 +4,14 @@ import { compareHash, hashPassword } from '../../utils/helpers';
 import * as userRepository from './repository';
 import { UserCreateIn, UserLoginIn, UserOut } from './dtos';
 
-export async function validateLogin(user: UserLoginIn): Promise<{ token: string } | null> {
+export async function validateLogin(user: UserLoginIn): Promise<string | null> {
   try {
     const password = await userRepository.getPassword(user.username);
     const isPasswordValid = await compareHash(user.password, password);
 
     if (isPasswordValid) {
-      const token = await generateToken(user.username);
-      return { token };
+      const token = generateToken(user.username);
+      return token;
     } else {
       throw new Error('Invalid credentials');
     }
@@ -31,7 +31,7 @@ export async function logout(username: string): Promise<void> {
 }
 
 export async function create(user: UserCreateIn) {
-  const hashedPassword = hashPassword(user.password);
+  const hashedPassword = await hashPassword(user.password);
 
   const userData = {
     ...user,

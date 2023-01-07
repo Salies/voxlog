@@ -8,11 +8,12 @@ export async function login(req: Request, res: Response) {
   try {
     const userData = UserLoginInSchema.parse(req.body);
 
-    const token = userService.validateLogin(userData);
+    const token = await userService.validateLogin(userData);
 
-    res.status(200).json({ token });
+    if(token)
+      return res.status(200).json({ token });
 
-    res.status(401).json({ error: 'Invalid credentials' });
+    return res.status(401).json({ error: 'Invalid credentials' });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal server error' });
