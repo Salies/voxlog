@@ -11,8 +11,8 @@ export type Album = {
   fromArtist: Artist;
 };
 
-export type Song = {
-  songId: string;
+export type Track = {
+  trackId: string;
   title: string;
   coverArtUrl: string | null;
   durationInSeconds: number;
@@ -23,5 +23,3 @@ export type Song = {
   };
   artist: Artist;
 };
-
-

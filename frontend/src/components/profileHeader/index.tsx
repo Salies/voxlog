@@ -1,8 +1,8 @@
-import Image from "next/image";
-import React from "react";
-import Avatar from "react-avatar";
-import UserImage from "../userImage";
-import { UserDTO } from "../../utils/dtos/User";
+import Image from 'next/image';
+import React from 'react';
+import Avatar from 'react-avatar';
+import UserImage from '../userImage';
+import { UserDTO } from '../../utils/dtos/User';
 
 const ProfileHeader = ({ user }: { user?: UserDTO }) => {
   if (!user) return null;
@@ -18,7 +18,7 @@ const ProfileHeader = ({ user }: { user?: UserDTO }) => {
     hours: 350234,
     artists: 695,
     albums: 1112,
-    songs: 403506,
+    tracks: 403506,
   };
 
   return (
@@ -38,18 +38,10 @@ type ProfileInfoProps = {
   profilePictureUrl: string;
   bio: string;
 };
-const ProfileInfo = ({
-  profilePictureUrl,
-  realName,
-  username,
-}: ProfileInfoProps) => {
+const ProfileInfo = ({ profilePictureUrl, realName, username }: ProfileInfoProps) => {
   return (
     <div className="flex justify-center">
-      <UserImage
-        url={profilePictureUrl}
-        name={realName || username}
-        sizeInPixels={128}
-      />
+      <UserImage url={profilePictureUrl} name={realName || username} sizeInPixels={128} />
       <div className="flex flex-col justify-center px-5">
         <h1 className="text-3xl font-bold">{realName}</h1>
         <h1 className="text-xl">@{username}</h1>
@@ -62,17 +54,12 @@ type ProfileMusicStatusProps = {
   hours: number;
   artists: number;
   albums: number;
-  songs: number;
+  tracks: number;
 };
 
-const ProfileMusicStatus = ({
-  hours,
-  artists,
-  albums,
-  songs,
-}: ProfileMusicStatusProps) => {
+const ProfileMusicStatus = ({ hours, artists, albums, tracks }: ProfileMusicStatusProps) => {
   const intToAbbrev = (num: number, fixed = 1) => {
-    const abbrev = ["", "K", "M", "B", "T"];
+    const abbrev = ['', 'K', 'M', 'B', 'T'];
     const exp = Math.floor(Math.log(num) / Math.log(1000));
     const result = num / Math.pow(1000, exp);
     if (exp === 0) return `${result.toFixed(0)}${abbrev[exp]}`;
@@ -80,9 +67,7 @@ const ProfileMusicStatus = ({
   };
   return (
     <section className="justify-center mx-auto mt-5 text-center md:mx-0 md:mt-0">
-      <h1 className="text-xl font-bold">
-        {intToAbbrev(hours, 0)} hours listening
-      </h1>
+      <h1 className="text-xl font-bold">{intToAbbrev(hours, 0)} hours listening</h1>
       <div className="flex mt-2 justify-evenly">
         <div className="flex flex-col items-center">
           <p className="-m-2 text-lg">{intToAbbrev(artists)}</p>
@@ -93,8 +78,8 @@ const ProfileMusicStatus = ({
           <p className="text-sm font-light">albums</p>
         </div>
         <div className="flex flex-col">
-          <p className="-m-2 text-lg">{intToAbbrev(songs)}</p>
-          <p className="text-sm font-light">songs</p>
+          <p className="-m-2 text-lg">{intToAbbrev(tracks)}</p>
+          <p className="text-sm font-light">tracks</p>
         </div>
       </div>
     </section>

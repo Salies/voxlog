@@ -1,26 +1,26 @@
 import React from 'react';
 import api from '../../lib/axios';
 import { NextPageContext } from 'next';
-import { Song } from '../../utils/dtos/Resources';
+import { Track } from '../../utils/dtos/Resources';
 import Image from 'next/image';
 
-export default function SongPage({ song }: { song: Song }) {
+export default function TrackPage({ track }: { track: Track }) {
   return (
     <div className="w-full h-screen">
       <div className="items-center w-full mx-auto mt-8">
         <div className="">
-          {song.coverArtUrl && (
+          {track.coverArtUrl && (
             <Image
-              src={song.coverArtUrl}
-              alt={song.title}
+              src={track.coverArtUrl}
+              alt={track.title}
               width={200}
               height={200}
               className="mx-auto rounded-md shadow-xl dark:shadow-none"
             />
           )}
           <div>
-            <h1 className="mt-4 text-5xl font-extrabold text-center">{song.title}</h1>
-            <h1 className="text-2xl font-semibold tracking-tight text-center">{song.artist.name}</h1>
+            <h1 className="mt-4 text-5xl font-extrabold text-center">{track.title}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-center">{track.artist.name}</h1>
           </div>
         </div>
       </div>
@@ -30,13 +30,13 @@ export default function SongPage({ song }: { song: Song }) {
 
 export async function getServerSideProps(context: NextPageContext) {
   try {
-    const { songId } = context.query;
-    const { data: song }: { data: Song } = await api.get(`/songs/${songId}`);
+    const { trackId } = context.query;
+    const { data: track }: { data: Track } = await api.get(`/tracks/${trackId}`);
 
-    if (!song) throw new Error('User not found');
+    if (!track) throw new Error('User not found');
     return {
       props: {
-        song,
+        track,
       },
     };
   } catch (error) {

@@ -30,8 +30,8 @@ export default function AlbumPage({ album }: { album: Album }) {
 
 export async function getServerSideProps(context: NextPageContext) {
   try {
-    const { songId } = context.query;
-    const { data } = await api.get(`/albums/${songId}`);
+    const { trackId } = context.query;
+    const { data } = await api.get(`/albums/${trackId}`);
     const album = JSON.parse(data);
     if (!album) throw new Error('Album not found');
     return {

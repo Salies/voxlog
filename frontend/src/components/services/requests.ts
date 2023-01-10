@@ -1,71 +1,71 @@
-import api from '../../lib/axios'
+import api from '../../lib/axios';
 
-// Page: www.voxlog.com/songs/
+// Page: www.voxlog.com/tracks/
 
-export function getPopularSongs() {
-  // Get today's N most popular songs.
-  const quantity = 10
-  return api.get('/songs/popular', { params: { quantity } })
+export function getPopularTracks() {
+  // Get today's N most popular tracks.
+  const quantity = 10;
+  return api.get('/tracks/popular', { params: { quantity } });
 }
 
-export function getSongByName(name: string) {
-  // Get a song by its name. As a user, it would be great if it made a full text search.
-  return api.get(`/songs/search?name=${name}`)
+export function getTrackByName(name: string) {
+  // Get a track by its name. As a user, it would be great if it made a full text search.
+  return api.get(`/tracks/search?name=${name}`);
 }
 
-// Page www.voxlog.com/songs/:id
-export function getSongById(id: string) {
-  // Get a song by its id.
-  return api.get(`/songs/${id}`)
+// Page www.voxlog.com/tracks/:id
+export function getTrackById(id: string) {
+  // Get a track by its id.
+  return api.get(`/tracks/${id}`);
 }
 
 // Page www.voxlog.com/albums/
 export function getPopularAlbums() {
   // Get today's N most popular albums.
-  const quantity = 10
-  return api.get('/albums/popular', { params: { quantity } })
+  const quantity = 10;
+  return api.get('/albums/popular', { params: { quantity } });
 }
 
 export function getAlbumByName(name: string) {
   // Get an album by its name. As a user, it would be great if it made a full text search.
-  return api.get(`/albums/search?name=${name}`)
+  return api.get(`/albums/search?name=${name}`);
 }
 
 // Page www.voxlog.com/albums/:id
 export function getAlbumById(id: string) {
   // Get an album by its id.
-  return api.get(`/albums/${id}`)
+  return api.get(`/albums/${id}`);
 }
 
 // Page www.voxlog.com/artists/
 export function getPopularArtists() {
   // Get today's N most popular artists.
-  const quantity = 10
-  return api.get('/artists/popular', { params: { quantity } })
+  const quantity = 10;
+  return api.get('/artists/popular', { params: { quantity } });
 }
 
 export function getArtistByName(name: string) {
   // Get an artist by its name. As a user, it would be great if it made a full text search.
-  return api.get(`/artists/search?name=${name}`)
+  return api.get(`/artists/search?name=${name}`);
 }
 
 // Page www.voxlog.com/artists/:id
 export function getArtistById(id: string) {
   // Get an artist by its id.
-  return api.get(`/artists/${id}`)
+  return api.get(`/artists/${id}`);
 }
 
 // Page www.voxlog.com/users/
 
 export function getUserByUsername(username: string) {
   // Get a user by its username.
-  return api.get(`/user/search?username=${username}`)
+  return api.get(`/users/search?username=${username}`);
 }
 
 // Page www.voxlog.com/signin/
 export function signIn(username: string, password: string) {
   // Sign in a user.
-  return api.post('/users/signin', { username, password })
+  return api.post('/users/signin', { username, password });
 }
 
 // Page www.voxlog.com/signup/
@@ -75,7 +75,7 @@ export function signUp(
   email: string,
   birthdate: string,
   realname: string,
-  bio: string
+  bio: string,
 ) {
   // Sign up a user.
   return api.post('/users/signup', {
@@ -84,8 +84,8 @@ export function signUp(
     email,
     birthdate,
     realname,
-    bio
-  })
+    bio,
+  });
 }
 
 // Page www.voxlog.com/users/:id
@@ -94,9 +94,9 @@ export function signUp(
 
 export function uploadAvatar(id: string, avatar: File) {
   // Upload a user's avatar.
-  const formData = new FormData()
-  formData.append('avatar', avatar)
-  return api.put(`/user/${id}/avatar`, formData)
+  const formData = new FormData();
+  formData.append('avatar', avatar);
+  return api.put(`/users/${id}/avatar`, formData);
 }
 
 export function updateUser(
@@ -105,24 +105,24 @@ export function updateUser(
   email: string,
   birthdate: string,
   realname: string,
-  bio: string
+  bio: string,
 ) {
   // Update a user's data.
-  return api.put(`/user/${id}`, {
+  return api.put(`/users/${id}`, {
     username,
     email,
     birthdate,
     realname,
-    bio
-  })
+    bio,
+  });
 }
 
 export function deleteUser(id: string) {
   // Delete a user.
-  return api.delete(`/user/${id}`)
+  return api.delete(`/users/${id}`);
 }
 
 export function getUserById(id: string) {
   // Get a user by its id.
-  return api.get(`/user/${id}`)
+  return api.get(`/users/${id}`);
 }

@@ -163,9 +163,9 @@ const ScrobbleInstance = ({ scrobble }: { scrobble: UserRecentTracksDTO }) => {
   return (
     <div className="flex items-center w-full p-2 mt-2 transition-all duration-200 ease-in-out md:mt-1 hover:scale-105 hover:shadow-md hover:shadow-neutral-200 hover:dark:shadow-black">
       <div className="flex items-center justify-between w-full">
-        {scrobble.song.coverArtUrl && scrobble.album.coverArtUrl ? (
+        {scrobble.track.coverArtUrl && scrobble.album.coverArtUrl ? (
           <Image
-            src={scrobble.song.coverArtUrl || scrobble.album.coverArtUrl}
+            src={scrobble.track.coverArtUrl || scrobble.album.coverArtUrl}
             alt=""
             width={40}
             height={40}
@@ -173,14 +173,14 @@ const ScrobbleInstance = ({ scrobble }: { scrobble: UserRecentTracksDTO }) => {
           />
         ) : (
           <Avatar
-            name={scrobble.song.songTitle}
+            name={scrobble.track.trackTitle}
             size="40"
             className="w-10 transition-all ease-in-out rounded-sm hover:scale-150 duration-50 "
           />
         )}
         <div className="flex flex-col text-center ">
-          <Link href={`/songs/${scrobble.song.songId}`}>
-            <span className="font-semibold text-md">{scrobble.song.songTitle}</span>
+          <Link href={`/tracks/${scrobble.track.trackId}`}>
+            <span className="font-semibold text-md">{scrobble.track.trackTitle}</span>
           </Link>
           <Link href={`/artists/${scrobble.artist.artistId}`}>
             <span className="text-sm font-thin">{scrobble.artist.name}</span>

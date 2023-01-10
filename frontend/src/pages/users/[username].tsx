@@ -34,7 +34,7 @@ export default function UserProfile({ user }: { user: UserDTO }) {
 export async function getServerSideProps(context: NextPageContext) {
   try {
     const { username } = context.query;
-    const { data: user }: { data: UserDTO } = await api.get(`/user/${username}`);
+    const { data: user }: { data: UserDTO } = await api.get(`/users/${username}`);
 
     if (!user) throw new Error('User not found');
     return {

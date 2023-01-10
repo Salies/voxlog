@@ -45,7 +45,7 @@ export const AuthContextProvider = ({ children }: React.PropsWithChildren<{}>) =
   const signIn = async (username: string, password: string) => {
     try {
       const body = { username, password };
-      const { data } = await api.post('/user/auth', body);
+      const { data } = await api.post('/users/auth', body);
       const { token } = data;
 
       setCookie(undefined, 'jwt.token', token, { maxAge: 60 * 60 * 24 * 30 });
@@ -63,7 +63,7 @@ export const AuthContextProvider = ({ children }: React.PropsWithChildren<{}>) =
       api.defaults.headers['Authorization'] = `Bearer ${token}`;
       setLoading(true);
       api
-        .get('/user/current')
+        .get('/users/current')
         .then((response) => {
           const user: UserDTO = response.data as UserDTO;
           setUser(user);

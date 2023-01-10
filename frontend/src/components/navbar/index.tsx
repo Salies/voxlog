@@ -6,8 +6,8 @@ import Image from 'next/image';
 
 const navbarLinks: LinkProps[] = [
   {
-    text: 'songs',
-    href: '/songs',
+    text: 'tracks',
+    href: '/tracks',
   },
   {
     text: 'albums',

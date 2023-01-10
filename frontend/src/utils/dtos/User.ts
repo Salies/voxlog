@@ -17,16 +17,16 @@ export type UserDTO = {
   profilePictureUrl?: string;
   defaultTopArtistsRange: string;
   defaultTopAlbumsRange: string;
-  defaultTopSongsRange: string;
+  defaultTopTracksRange: string;
   createdAt: Date;
   updatedAt: Date;
 };
 
 export type UserRecentTracksDTO = {
   scrobbleCreatedAt: Date;
-  song: {
-    songId: string;
-    songTitle: string;
+  track: {
+    trackId: string;
+    trackTitle: string;
     coverArtUrl: string;
   };
   album: {
