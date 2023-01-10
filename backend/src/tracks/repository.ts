@@ -1,12 +1,11 @@
 import { Track as PTrack } from '@prisma/client';
-import { Track, Artist, Album } from '../../utils/dtos/Resources';
 
-import { prisma, sql } from '../../utils/prisma';
+import { db, sql } from '../lib/database/connector';
 import { TrackOut } from './dtos';
 
 export async function searchByName(trackName: string): Promise<TrackOut[]> {
   const spacedTrackName = trackName.replace(' ', ' & ');
-  const tracks: PTrack[] = await prisma.track.findMany({
+  const tracks: PTrack[] = await db.track.findMany({
     where: {
       trackTitle: {
         search: spacedTrackName,
@@ -25,7 +24,7 @@ export async function searchByName(trackName: string): Promise<TrackOut[]> {
 }
 
 export async function getById(trackId: string): Promise<TrackOut | null> {
-  const trackData = await prisma.$queryRaw(sql`
+  const trackData = await db.$queryRaw(sql`
     SELECT "Track"."trackId", "Track"."title", "Track"."coverArtUrl", "Track"."durationInSeconds", "Track"."albumId", \
     "Album"."albumId" as "albumId", "Album"."title" AS "albumTitle", "Album"."coverArtUrl" AS "albumCoverArtUrl", \
     "Artist"."artistId" as "artistId", "Artist"."name" AS "artistName", "Artist"."artUrl" AS "artistArtUrl" \

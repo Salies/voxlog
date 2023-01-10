@@ -1,12 +1,11 @@
 import { DateTime } from 'luxon';
-import { prisma, sql } from '../../utils/prisma';
-import { Prisma } from '@prisma/client';
+import { db, sql } from '../lib/database/connector';
 import { UserCreateIn, UserOut } from './dtos';
 import cuid from 'cuid';
 
 export async function getPassword(username: string): Promise<string> {
   try {
-    const password: any[] = await prisma.$queryRaw(sql`
+    const password: any[] = await db.$queryRaw(sql`
     SELECT "password" FROM "User" WHERE "username" = ${username} LIMIT 1
   `);
 
@@ -20,7 +19,7 @@ export async function create(user: UserCreateIn): Promise<UserOut | null> {
   try {
     const birthDate = DateTime.fromFormat(user.birthDate, 'yyyy-MM-dd').toJSDate();
 
-    const affectedRows: any = await prisma.$executeRaw(
+    const affectedRows: any = await db.$executeRaw(
       sql`INSERT INTO "User" ("userId", "username", "email", "password", "birthDate", "bio", "realName") VALUES (${cuid()}, ${
         user.username
       }, ${user.email}, ${user.password}, ${birthDate}, ${user.bio}, ${user.realName});`,
@@ -35,7 +34,7 @@ export async function create(user: UserCreateIn): Promise<UserOut | null> {
 
 export async function getByUsername(username: string): Promise<UserOut | null> {
   try {
-    const user: UserOut[] = await prisma.$queryRaw<UserOut[]>(
+    const user: UserOut[] = await db.$queryRaw<UserOut[]>(
       sql`SELECT "username", "email", "birthDate", "bio", "realName", "profilePictureUrl", "defaultTopArtistsRange", "defaultTopAlbumsRange", "defaultTopTracksRange", "createdAt", "updatedAt" FROM "User" WHERE "username" = ${username} LIMIT 1`,
     );
 
@@ -52,7 +51,7 @@ export async function getListeningStats(username: string): Promise<any> {
 
 export async function getRecentScrobbles(username: string, quantity: number): Promise<any> {
   try {
-    const tracksInMostRecentOrder: any[] = await prisma.$queryRaw(sql`
+    const tracksInMostRecentOrder: any[] = await db.$queryRaw(sql`
     SELECT "Track"."trackId" as "trackId", "Track"."title" as "trackTitle", "Track"."coverArtUrl" as "coverArtUrl", \
     "Album"."coverArtUrl" AS "albumCoverArtUrl", \
     "Artist"."artistId" as "artistId", "Artist"."name" AS "artistName", \

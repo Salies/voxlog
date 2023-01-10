@@ -1,4 +1,4 @@
-import { prisma, sql } from '../../utils/prisma';
+import { db, sql } from '../lib/database/connector';
 import { AlbumOut } from './dtos';
 
 export async function getById(albumId: string): Promise<AlbumOut | null> {
