@@ -59,7 +59,7 @@ export function getArtistById(id: string) {
 
 export function getUserByUsername(username: string) {
   // Get a user by its username.
-  return api.get(`/users/search?username=${username}`)
+  return api.get(`/user/search?username=${username}`)
 }
 
 // Page www.voxlog.com/signin/
@@ -96,7 +96,7 @@ export function uploadAvatar(id: string, avatar: File) {
   // Upload a user's avatar.
   const formData = new FormData()
   formData.append('avatar', avatar)
-  return api.put(`/users/${id}/avatar`, formData)
+  return api.put(`/user/${id}/avatar`, formData)
 }
 
 export function updateUser(
@@ -108,7 +108,7 @@ export function updateUser(
   bio: string
 ) {
   // Update a user's data.
-  return api.put(`/users/${id}`, {
+  return api.put(`/user/${id}`, {
     username,
     email,
     birthdate,
@@ -119,10 +119,10 @@ export function updateUser(
 
 export function deleteUser(id: string) {
   // Delete a user.
-  return api.delete(`/users/${id}`)
+  return api.delete(`/user/${id}`)
 }
 
 export function getUserById(id: string) {
   // Get a user by its id.
-  return api.get(`/users/${id}`)
+  return api.get(`/user/${id}`)
 }

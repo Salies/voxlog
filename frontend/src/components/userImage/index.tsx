@@ -11,7 +11,7 @@ const UserImage = ({
   return (
     <>
       {url ? (
-        <Image
+        <img
           src={url}
           alt="avatar"
           width={sizeInPixels}
