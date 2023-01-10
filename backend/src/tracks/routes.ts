@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as Tracks from '../entities/tracks/handler';
+import * as Tracks from './handler';
 
 const routes = Router();
 

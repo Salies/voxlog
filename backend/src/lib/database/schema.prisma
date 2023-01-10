@@ -21,7 +21,7 @@ model User {
 
   defaultTopArtistsRange DaysRange @default(Week)
   defaultTopAlbumsRange DaysRange @default(Week)
-  defaultTopSongsRange DaysRange @default(Week)
+  defaultTopTracksRange DaysRange @default(Week)
 
   createdAt DateTime @default(now()) @db.Timestamp(0)
   updatedAt DateTime @updatedAt @default(now()) @db.Timestamp(0)
@@ -36,17 +36,17 @@ model Scrobble {
   userId String
   user User @relation(fields: [userId], references: [userId])
   
-  songId String?
-  song Song? @relation(fields: [songId], references: [songId])
+  trackId String?
+  track Track? @relation(fields: [trackId], references: [trackId])
 
   createdAt DateTime @default(now()) @db.Timestamp(0)
 }
 
-model Song {
-  songId String @id @db.VarChar(16) // isrc
+model Track {
+  trackId String @id @db.VarChar(16) // isrc
 
   albumId String
-  songTitle String @db.VarChar(100)
+  trackTitle String @db.VarChar(100)
   durationInSeconds Int @db.Integer
 
   coverArtUrl String? @db.VarChar(256)  
@@ -66,7 +66,7 @@ model Album {
   coverArtUrl String? @db.VarChar(256)
   mbReleaseId String? @unique
   
-  songs Song[]
+  tracks Track[]
   
   fromArtist Artist @relation(fields: [artistId], references: [artistId])
 }

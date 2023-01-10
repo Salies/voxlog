@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as Album from '../entities/albums/handler';
+import * as Album from './handler';
 
 const routes = Router();
 

@@ -1,14 +1,14 @@
-import { Song as PSong } from '@prisma/client';
-import { Song, Artist, Album } from '../../utils/dtos/Resources';
+import { Track as PTrack } from '@prisma/client';
+import { Track, Artist, Album } from '../../utils/dtos/Resources';
 
 import { prisma, sql } from '../../utils/prisma';
 import { TrackOut } from './dtos';
 
 export async function searchByName(trackName: string): Promise<TrackOut[]> {
   const spacedTrackName = trackName.replace(' ', ' & ');
-  const tracks: PSong[] = await prisma.song.findMany({
+  const tracks: PTrack[] = await prisma.track.findMany({
     where: {
-      songTitle: {
+      trackTitle: {
         search: spacedTrackName,
       },
     },
@@ -25,33 +25,33 @@ export async function searchByName(trackName: string): Promise<TrackOut[]> {
 }
 
 export async function getById(trackId: string): Promise<TrackOut | null> {
-  const songData = await prisma.$queryRaw(sql`
-    SELECT "Song"."songId", "Song"."title", "Song"."coverArtUrl", "Song"."durationInSeconds", "Song"."albumId", \
+  const trackData = await prisma.$queryRaw(sql`
+    SELECT "Track"."trackId", "Track"."title", "Track"."coverArtUrl", "Track"."durationInSeconds", "Track"."albumId", \
     "Album"."albumId" as "albumId", "Album"."title" AS "albumTitle", "Album"."coverArtUrl" AS "albumCoverArtUrl", \
     "Artist"."artistId" as "artistId", "Artist"."name" AS "artistName", "Artist"."artUrl" AS "artistArtUrl" \
-    FROM "Song" \
-    INNER JOIN "Album" ON "Album"."albumId" = "Song"."albumId" \
+    FROM "Track" \
+    INNER JOIN "Album" ON "Album"."albumId" = "Track"."albumId" \
     INNER JOIN "Artist" ON "Artist"."artistId" = "Album"."artistId" \
-    WHERE "songId" = ${trackId} LIMIT 1;
+    WHERE "trackId" = ${trackId} LIMIT 1;
     `);
 
-  // const song: Song = {
-  //   songId: songData[0].songId,
-  //   title: songData[0].title,
-  //   coverArtUrl: songData[0].coverArtUrl,
-  //   durationInSeconds: songData[0].durationInSeconds,
+  // const track: Track = {
+  //   trackId: trackData[0].trackId,
+  //   title: trackData[0].title,
+  //   coverArtUrl: trackData[0].coverArtUrl,
+  //   durationInSeconds: trackData[0].durationInSeconds,
   //   album: {
-  //     albumId: songData[0].albumId,
-  //     title: songData[0].albumTitle,
-  //     coverArtUrl: songData[0].albumCoverArtUrl,
+  //     albumId: trackData[0].albumId,
+  //     title: trackData[0].albumTitle,
+  //     coverArtUrl: trackData[0].albumCoverArtUrl,
   //   },
   //   artist: {
-  //     artistId: songData[0].artistId,
-  //     name: songData[0].artistName,
-  //     artUrl: songData[0].artistArtUrl,
+  //     artistId: trackData[0].artistId,
+  //     name: trackData[0].artistName,
+  //     artUrl: trackData[0].artistArtUrl,
   //   },
   // };
-  // return song;
+  // return track;
   return null;
 }
 

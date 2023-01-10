@@ -31,7 +31,7 @@ export const UserOutSchema = z.object({
   profilePictureUrl: z.string().optional(),
   defaultTopArtistsRange: z.string(),
   defaultTopAlbumsRange: z.string(),
-  defaultTopSongsRange: z.string(),
+  defaultTopTracksRange: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

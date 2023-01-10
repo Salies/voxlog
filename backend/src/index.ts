@@ -1,28 +1,21 @@
 import 'dotenv/config';
-import express from 'express';
-import scrobbleRoutes from './routes/ScrobbleRoutes';
-import userRoutes from './routes/UserRoutes';
-import trackRoutes from './routes/SongsRoutes';
-import albumRoutes from './routes/AlbumsRoutes';
-import artistRoutes from './routes/ArtistsRoutes';
+import express, { Request, Response } from 'express';
+import scrobblesRoutes from './scrobbles/routes';
+import userRoutes from './users/routes';
+import trackRoutes from './tracks/routes';
+import albumRoutes from './albums/routes';
+import artistRoutes from './artists/routes';
 import { DateTime } from 'luxon';
+import { cors } from './utils/cors';
 
 const app = express();
-
 app.use(express.json());
+app.use((req, res, next) => cors(req, res, next));
 
-app.use((req, res, next) => {
-  console.log('REQUEST', req.method, req.url, 'at ', DateTime.local().toISO());
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', '*');
-  console.log('\nBody: ', req.body, 'Params: ', req.params, 'Query: ', req.query);
-  next();
-});
-
-app.use('/api', scrobbleRoutes);
-app.use('/user', userRoutes);
-app.use('/track', trackRoutes);
-app.use('/album', albumRoutes);
-app.use('/artist', artistRoutes);
+app.use('/scrobbles', scrobblesRoutes);
+app.use('/users', userRoutes);
+app.use('/tracks', trackRoutes);
+app.use('/albums', albumRoutes);
+app.use('/artists', artistRoutes);
 
 app.listen(8000);

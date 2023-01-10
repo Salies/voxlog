@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import * as User from '../entities/users/handler';
-import { UserCreateInSchema, UserLoginInSchema } from '../entities/users/dtos';
+import * as User from './handler';
+import { UserCreateInSchema, UserLoginInSchema } from './dtos';
 import { validateBody } from '../middlewares/dto';
 import auth from '../middlewares/auth';
 
